@@ -1,0 +1,2593 @@
+<!-- livebook:{"persist_outputs":true} -->
+
+# Age of Dutch politicians
+
+```elixir
+Mix.install([
+  {:vega_lite, "~> 0.1.4"},
+  {:kino_vega_lite, "~> 0.1.1"},
+  {:jason, "~> 1.4"},
+  {:timex, "~> 3.7.9"}
+])
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+## Loading data from a JSON file
+
+```elixir
+members =
+  "#{__DIR__}/dutch-house-of-representatives.json"
+  |> File.read!()
+  |> Jason.decode!()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[
+  %{
+    "dob" => "1972-05-06T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q106120677",
+    "memberLabel" => "Simone Richardson",
+    "start" => "2022-09-06T00:00:00Z"
+  },
+  %{
+    "dob" => "1987-01-22T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q28549638",
+    "memberLabel" => "Anne Kuik",
+    "start" => "2022-08-23T00:00:00Z"
+  },
+  %{
+    "dob" => "1957-02-18T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q105710037",
+    "memberLabel" => "Ralf Dekker",
+    "start" => "2022-08-23T00:00:00Z"
+  },
+  %{
+    "dob" => "1965-03-01T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119784",
+    "memberLabel" => "Chris Simons",
+    "start" => "2022-08-23T00:00:00Z"
+  },
+  %{
+    "dob" => "1973-12-04T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119783",
+    "memberLabel" => "Martijn Grevink",
+    "start" => "2022-08-23T00:00:00Z"
+  },
+  %{
+    "dob" => "1991-05-21T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q64590194",
+    "memberLabel" => "Nicki Pouw-Verweij",
+    "start" => "2022-06-30T00:00:00Z"
+  },
+  %{
+    "dob" => "1985-06-28T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q861657",
+    "memberLabel" => "Mohammed Mohandis",
+    "start" => "2022-06-02T00:00:00Z"
+  },
+  %{
+    "dob" => "1969-05-18T00:00:00Z",
+    "end" => "2022-08-23T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q28861154",
+    "memberLabel" => "Evert Jan Slootweg",
+    "start" => "2022-05-10T00:00:00Z"
+  },
+  %{
+    "dob" => "1965-03-01T00:00:00Z",
+    "end" => "2022-07-08T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119784",
+    "memberLabel" => "Chris Simons",
+    "start" => "2022-03-22T00:00:00Z"
+  },
+  %{
+    "dob" => "1977-06-06T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q105703737",
+    "memberLabel" => "Nilüfer Gündoğan",
+    "start" => "2022-03-22T00:00:00Z"
+  },
+  %{
+    "dob" => "1979-01-01T00:00:00Z",
+    "end" => "2022-06-30T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q110581955",
+    "memberLabel" => "Maarten Goudzwaard",
+    "start" => "2022-03-10T00:00:00Z"
+  },
+  %{
+    "dob" => "1977-06-06T00:00:00Z",
+    "end" => "2022-03-22T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q105703737",
+    "memberLabel" => "Nilüfer Gündoğan",
+    "start" => "2022-03-10T00:00:00Z"
+  },
+  %{
+    "dob" => "1977-06-06T00:00:00Z",
+    "end" => "2022-03-10T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q105703737",
+    "memberLabel" => "Nilüfer Gündoğan",
+    "start" => "2022-02-26T00:00:00Z"
+  },
+  %{
+    "dob" => "1979-01-01T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q104715862",
+    "memberLabel" => "Songül Mutluer",
+    "start" => "2022-02-17T00:00:00Z"
+  },
+  %{
+    "dob" => "1991-03-27T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q28860872",
+    "memberLabel" => "Rens Raemakers",
+    "start" => "2022-02-16T00:00:00Z"
+  },
+  %{
+    "dob" => "1981-09-28T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q83364836",
+    "memberLabel" => "Hind Dekker-Abdulaziz",
+    "start" => "2022-01-25T00:00:00Z"
+  },
+  %{
+    "dob" => "1987-08-13T00:00:00Z",
+    "end" => "2022-02-16T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q105750200",
+    "memberLabel" => "Sjoerd Warmerdam",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1973-03-21T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q2481353",
+    "memberLabel" => "Steven Van Weyenberg",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1965-03-05T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q28861134",
+    "memberLabel" => "Harry Bevers",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1984-10-07T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q28861451",
+    "memberLabel" => "Stieneke van der Graaf",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1972-05-05T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119779",
+    "memberLabel" => "Erik Haverkort",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1978-09-23T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119782",
+    "memberLabel" => "Hawre Rahimi",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1960-10-13T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119778",
+    "memberLabel" => "Ruud Verkuijlen",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1982-11-10T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106975619",
+    "memberLabel" => "Henri Bontenbal",
+    "start" => "2022-01-18T00:00:00Z"
+  },
+  %{
+    "dob" => "1980-04-22T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q16740286",
+    "memberLabel" => "Harry van der Molen",
+    "start" => "2021-12-28T00:00:00Z"
+  },
+  %{
+    "dob" => "1976-06-06T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q28860432",
+    "memberLabel" => "Suzanne Kröger",
+    "start" => "2021-10-27T00:00:00Z"
+  },
+  %{
+    "dob" => "1979-05-29T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q105750190",
+    "memberLabel" => "Fonda Sahla",
+    "start" => "2021-10-27T00:00:00Z"
+  },
+  %{
+    "dob" => "1982-11-10T00:00:00Z",
+    "end" => "2021-12-28T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106975619",
+    "memberLabel" => "Henri Bontenbal",
+    "start" => "2021-09-29T00:00:00Z"
+  },
+  %{
+    "dob" => "1958-08-21T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q28861153",
+    "memberLabel" => "Joba van den Berg-Jansen",
+    "start" => "2021-09-29T00:00:00Z"
+  },
+  %{
+    "dob" => "1974-01-08T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q7192814",
+    "memberLabel" => "Pieter Omtzigt",
+    "start" => "2021-09-15T00:00:00Z"
+  },
+  %{
+    "dob" => "1960-10-13T00:00:00Z",
+    "end" => "2022-01-12T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119778",
+    "memberLabel" => "Ruud Verkuijlen",
+    "start" => "2021-09-07T00:00:00Z"
+  },
+  %{
+    "dob" => "1975-01-16T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q83364807",
+    "memberLabel" => "Anne-Marijke Podt",
+    "start" => "2021-09-07T00:00:00Z"
+  },
+  %{
+    "dob" => "1970-04-05T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q28861073",
+    "memberLabel" => "Bart Smals",
+    "start" => "2021-09-07T00:00:00Z"
+  },
+  %{
+    "dob" => "1979-04-05T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119777",
+    "memberLabel" => "Mark Strolenberg",
+    "start" => "2021-09-07T00:00:00Z"
+  },
+  %{
+    "dob" => "1980-04-22T00:00:00Z",
+    "end" => "2021-09-07T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q16740286",
+    "memberLabel" => "Harry van der Molen",
+    "start" => "2021-08-17T00:00:00Z"
+  },
+  %{
+    "dob" => "1985-02-18T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106119776",
+    "memberLabel" => "Jan Klink",
+    "start" => "2021-06-02T00:00:00Z"
+  },
+  %{
+    "dob" => "1982-11-10T00:00:00Z",
+    "end" => "2021-09-15T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q106975619",
+    "memberLabel" => "Henri Bontenbal",
+    "start" => "2021-06-01T00:00:00Z"
+  },
+  %{
+    "dob" => "1967-01-31T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q28861054",
+    "memberLabel" => "Wybren van Haga",
+    "start" => "2021-05-13T00:00:00Z"
+  },
+  %{
+    "dob" => "1965-01-01T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q105709997",
+    "memberLabel" => "Olaf Ephraim",
+    "start" => "2021-05-13T00:00:00Z"
+  },
+  %{
+    "dob" => "1960-09-15T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q2021605",
+    "memberLabel" => "Hans Smolders",
+    "start" => "2021-05-13T00:00:00Z"
+  },
+  %{
+    "dob" => "1967-08-24T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q77814518",
+    "memberLabel" => "Liane den Haan",
+    "start" => "2021-05-11T00:00:00Z"
+  },
+  %{
+    "dob" => "1958-08-21T00:00:00Z",
+    "end" => "2021-08-17T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q28861153",
+    "memberLabel" => "Joba van den Berg-Jansen",
+    "start" => "2021-04-29T00:00:00Z"
+  },
+  %{
+    "dob" => "1971-12-30T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q28860879",
+    "memberLabel" => "Marijke van Beukering-Huijbregts",
+    "start" => "2021-04-21T00:00:00Z"
+  },
+  %{
+    "dob" => "1978-12-05T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q46445036",
+    "memberLabel" => "Wieke Paulusma",
+    "start" => "2021-04-15T00:00:00Z"
+  },
+  %{
+    "dob" => "1968-04-10T00:00:00Z",
+    "genderLabel" => "male",
+    "member" => "http://www.wikidata.org/entity/Q28860874",
+    "memberLabel" => "Tjeerd de Groot",
+    "start" => "2021-04-01T00:00:00Z"
+  },
+  %{
+    "dob" => "1968-10-09T00:00:00Z",
+    "end" => "2021-09-27T00:00:00Z",
+    "genderLabel" => "female",
+    "member" => "http://www.wikidata.org/entity/Q94229",
+    ...
+  },
+  %{
+    "dob" => "1977-06-06T00:00:00Z",
+    "end" => "2022-02-26T00:00:00Z",
+    "genderLabel" => "female",
+    ...
+  },
+  %{"dob" => "1979-04-22T00:00:00Z", "end" => "2021-06-02T00:00:00Z", ...},
+  %{"dob" => "1977-09-15T00:00:00Z", ...},
+  %{...},
+  ...
+]
+```
+
+```elixir
+members =
+  members
+  |> Enum.map(fn m ->
+    Map.new(%{
+      :memberLabel => m["memberLabel"],
+      :start => m["start"] |> String.slice(0..3) |> String.to_integer(),
+      :end => (m["end"] || "2022") |> String.slice(0..3) |> String.to_integer(),
+      :dob => m["dob"] |> String.slice(0..3) |> String.to_integer(),
+      :genderLabel => m["genderLabel"]
+    })
+  end)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[
+  %{dob: 1972, end: 2022, genderLabel: "female", memberLabel: "Simone Richardson", start: 2022},
+  %{dob: 1987, end: 2022, genderLabel: "female", memberLabel: "Anne Kuik", start: 2022},
+  %{dob: 1957, end: 2022, genderLabel: "male", memberLabel: "Ralf Dekker", start: 2022},
+  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Chris Simons", start: 2022},
+  %{dob: 1973, end: 2022, genderLabel: "male", memberLabel: "Martijn Grevink", start: 2022},
+  %{dob: 1991, end: 2022, genderLabel: "female", memberLabel: "Nicki Pouw-Verweij", start: 2022},
+  %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Mohammed Mohandis", start: 2022},
+  %{dob: 1969, end: 2022, genderLabel: "male", memberLabel: "Evert Jan Slootweg", start: 2022},
+  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Chris Simons", start: 2022},
+  %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Nilüfer Gündoğan", start: 2022},
+  %{dob: 1979, end: 2022, genderLabel: "male", memberLabel: "Maarten Goudzwaard", start: 2022},
+  %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Nilüfer Gündoğan", start: 2022},
+  %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Nilüfer Gündoğan", start: 2022},
+  %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Songül Mutluer", start: 2022},
+  %{dob: 1991, end: 2022, genderLabel: "male", memberLabel: "Rens Raemakers", start: 2022},
+  %{dob: 1981, end: 2022, genderLabel: "female", memberLabel: "Hind Dekker-Abdulaziz", start: 2022},
+  %{dob: 1987, end: 2022, genderLabel: "male", memberLabel: "Sjoerd Warmerdam", start: 2022},
+  %{dob: 1973, end: 2022, genderLabel: "male", memberLabel: "Steven Van Weyenberg", start: 2022},
+  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Harry Bevers", start: 2022},
+  %{dob: 1984, end: 2022, genderLabel: "female", memberLabel: "Stieneke van der Graaf", start: 2022},
+  %{dob: 1972, end: 2022, genderLabel: "male", memberLabel: "Erik Haverkort", start: 2022},
+  %{dob: 1978, end: 2022, genderLabel: "male", memberLabel: "Hawre Rahimi", start: 2022},
+  %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Ruud Verkuijlen", start: 2022},
+  %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Henri Bontenbal", start: 2022},
+  %{dob: 1980, end: 2022, genderLabel: "male", memberLabel: "Harry van der Molen", start: 2021},
+  %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Suzanne Kröger", start: 2021},
+  %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Fonda Sahla", start: 2021},
+  %{dob: 1982, end: 2021, genderLabel: "male", memberLabel: "Henri Bontenbal", start: 2021},
+  %{
+    dob: 1958,
+    end: 2022,
+    genderLabel: "female",
+    memberLabel: "Joba van den Berg-Jansen",
+    start: 2021
+  },
+  %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2021},
+  %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Ruud Verkuijlen", start: 2021},
+  %{dob: 1975, end: 2022, genderLabel: "female", memberLabel: "Anne-Marijke Podt", start: 2021},
+  %{dob: 1970, end: 2022, genderLabel: "male", memberLabel: "Bart Smals", start: 2021},
+  %{dob: 1979, end: 2022, genderLabel: "male", memberLabel: "Mark Strolenberg", start: 2021},
+  %{dob: 1980, end: 2021, genderLabel: "male", memberLabel: "Harry van der Molen", start: 2021},
+  %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Jan Klink", start: 2021},
+  %{dob: 1982, end: 2021, genderLabel: "male", memberLabel: "Henri Bontenbal", start: 2021},
+  %{dob: 1967, end: 2022, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2021},
+  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Olaf Ephraim", start: 2021},
+  %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Hans Smolders", start: 2021},
+  %{dob: 1967, end: 2022, genderLabel: "female", memberLabel: "Liane den Haan", start: 2021},
+  %{
+    dob: 1958,
+    end: 2021,
+    genderLabel: "female",
+    memberLabel: "Joba van den Berg-Jansen",
+    start: 2021
+  },
+  %{
+    dob: 1971,
+    end: 2022,
+    genderLabel: "female",
+    memberLabel: "Marijke van Beukering-Huijbregts",
+    start: 2021
+  },
+  %{dob: 1978, end: 2022, genderLabel: "female", memberLabel: "Wieke Paulusma", start: 2021},
+  %{dob: 1968, end: 2022, genderLabel: "male", memberLabel: "Tjeerd de Groot", start: 2021},
+  %{dob: 1968, end: 2021, genderLabel: "female", memberLabel: "Mona Keijzer", ...},
+  %{dob: 1977, end: 2022, genderLabel: "female", ...},
+  %{dob: 1979, end: 2021, ...},
+  %{dob: 1977, ...},
+  %{...},
+  ...
+]
+```
+
+```elixir
+members_per_year =
+  1850..2022
+  |> Enum.map(fn year ->
+    %{year => members |> Enum.filter(fn m -> year > m[:start] and year <= m[:end] end)}
+  end)
+  |> Enum.reverse()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[
+  %{
+    2022 => [
+      %{dob: 1980, end: 2022, genderLabel: "male", memberLabel: "Harry van der Molen", start: 2021},
+      %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Suzanne Kröger", start: 2021},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Fonda Sahla", start: 2021},
+      %{
+        dob: 1958,
+        end: 2022,
+        genderLabel: "female",
+        memberLabel: "Joba van den Berg-Jansen",
+        start: 2021
+      },
+      %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2021},
+      %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Ruud Verkuijlen", start: 2021},
+      %{dob: 1975, end: 2022, genderLabel: "female", memberLabel: "Anne-Marijke Podt", start: 2021},
+      %{dob: 1970, end: 2022, genderLabel: "male", memberLabel: "Bart Smals", start: 2021},
+      %{dob: 1979, end: 2022, genderLabel: "male", memberLabel: "Mark Strolenberg", start: 2021},
+      %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Jan Klink", start: 2021},
+      %{dob: 1967, end: 2022, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2021},
+      %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Olaf Ephraim", start: 2021},
+      %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Hans Smolders", start: 2021},
+      %{dob: 1967, end: 2022, genderLabel: "female", memberLabel: "Liane den Haan", start: 2021},
+      %{
+        dob: 1971,
+        end: 2022,
+        genderLabel: "female",
+        memberLabel: "Marijke van Beukering-Huijbregts",
+        start: 2021
+      },
+      %{dob: 1978, end: 2022, genderLabel: "female", memberLabel: "Wieke Paulusma", start: 2021},
+      %{dob: 1968, end: 2022, genderLabel: "male", memberLabel: "Tjeerd de Groot", start: 2021},
+      %{
+        dob: 1977,
+        end: 2022,
+        genderLabel: "female",
+        memberLabel: "Nilüfer Gündoğan",
+        start: 2021
+      },
+      %{dob: 1977, end: 2022, genderLabel: "male", memberLabel: "Daan de Neef", start: 2021},
+      %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Carola Schouten", start: 2021},
+      %{dob: 1961, end: 2022, genderLabel: "female", memberLabel: "Sigrid Kaag", start: 2021},
+      %{dob: 1991, end: 2022, genderLabel: "female", memberLabel: "Nicki Pouw-Verweij", start: 2021},
+      %{dob: 1967, end: 2022, genderLabel: "male", memberLabel: "Mark Rutte", start: 2021},
+      %{dob: 1984, end: 2022, genderLabel: "female", memberLabel: "Simone Kerseboom", start: 2021},
+      %{dob: 1963, end: 2022, genderLabel: "male", memberLabel: "Hans Vijlbrief", start: 2021},
+      %{dob: 1975, end: 2022, genderLabel: "male", memberLabel: "Wopke Hoekstra", start: 2021},
+      %{dob: 1989, end: 2022, genderLabel: "female", memberLabel: "Marieke Koekkoek", start: 2021},
+      %{dob: 1990, end: 2022, genderLabel: "male", memberLabel: "Thom van Campen", start: 2021},
+      %{dob: 1990, end: 2022, genderLabel: "male", memberLabel: "Silvio Erkens", start: 2021},
+      %{dob: 1986, end: 2022, genderLabel: "male", memberLabel: "Ruben Brekelmans", start: 2021},
+      %{dob: 1971, end: 2022, genderLabel: "male", memberLabel: "Raymond Knops", start: 2021},
+      %{dob: 1964, end: 2022, genderLabel: "female", memberLabel: "Jorien Wuite", start: 2021},
+      %{dob: 1971, end: 2022, genderLabel: "female", memberLabel: "Sylvana Simons", start: 2021},
+      %{dob: 1975, end: 2022, genderLabel: "female", memberLabel: "Inge van Dijk", start: 2021},
+      %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Ingrid Michon", start: 2021},
+      %{dob: 1981, end: 2022, genderLabel: "male", memberLabel: "Eelco Heinen", start: 2021},
+      %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Joris Thijssen", start: 2021},
+      %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Laurens Dassen", start: 2021},
+      %{
+        dob: 1980,
+        end: 2022,
+        genderLabel: "male",
+        memberLabel: "Pepijn van Houwelingen",
+        start: 2021
+      },
+      %{
+        dob: 1984,
+        end: 2022,
+        genderLabel: "female",
+        memberLabel: "Hanneke van der Werf",
+        start: 2021
+      },
+      %{dob: 1988, end: 2022, genderLabel: "male", memberLabel: "Fahid Minhas", start: 2021},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Kati Piri", start: 2021},
+      %{dob: 1958, end: 2022, genderLabel: "male", memberLabel: "Derk Jan Eppink", start: 2021},
+      %{dob: 1994, end: 2022, genderLabel: "female", memberLabel: "Kauthar Bouchallikht", ...},
+      %{dob: 1998, end: 2022, genderLabel: "male", ...},
+      %{dob: 1984, end: 2022, ...},
+      %{dob: 1992, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2021 => [
+      %{dob: 1954, end: 2021, genderLabel: "male", memberLabel: "Henk de Vree", start: 2020},
+      %{dob: 1967, end: 2021, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2020},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Mark Snoeren", start: 2020},
+      %{dob: 1972, end: 2022, genderLabel: "male", memberLabel: "Sietse Fritsma", start: 2020},
+      %{dob: 1950, end: 2021, genderLabel: "male", memberLabel: "Henk Krol", start: 2020},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Martijn Bolkestein", start: 2020},
+      %{dob: 1991, end: 2021, genderLabel: "male", memberLabel: "Rens Raemakers", start: 2020},
+      %{
+        dob: 1971,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Marijke van Beukering-Huijbregts",
+        start: 2020
+      },
+      %{dob: 1989, end: 2021, genderLabel: "male", memberLabel: "Julius Terpstra", start: 2020},
+      %{
+        dob: 1989,
+        end: 2021,
+        genderLabel: "male",
+        memberLabel: "Tom van den Nieuwenhuijzen",
+        start: 2020
+      },
+      %{
+        dob: 1983,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Femke Merel van Kooten-Arissen",
+        start: 2020
+      },
+      %{dob: 1966, end: 2021, genderLabel: "male", memberLabel: "Chris Jansen", start: 2019},
+      %{dob: 1970, end: 2021, genderLabel: "male", memberLabel: "Bart Smals", start: 2019},
+      %{dob: 1985, end: 2022, genderLabel: "female", memberLabel: "Bente Becker", start: 2019},
+      %{dob: 1986, end: 2022, genderLabel: "female", memberLabel: "Eva van Esch", start: 2019},
+      %{
+        dob: 1984,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Stieneke van der Graaf",
+        start: 2019
+      },
+      %{dob: 1957, end: 2021, genderLabel: "female", memberLabel: "Léonie Sazias", start: 2019},
+      %{dob: 1975, end: 2021, genderLabel: "female", memberLabel: "Kelly Regterschot", start: 2019},
+      %{
+        dob: 1949,
+        end: 2021,
+        genderLabel: "male",
+        memberLabel: "Gerrit-Jan van Otterloo",
+        start: 2019
+      },
+      %{dob: 1969, end: 2022, genderLabel: "male", memberLabel: "Mark Harbers", start: 2019},
+      %{dob: 1984, end: 2021, genderLabel: "male", memberLabel: "Niels van den Berge", start: 2019},
+      %{dob: 1977, end: 2021, genderLabel: "female", memberLabel: "Wytske Postma", start: 2019},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Hilde Palland", start: 2019},
+      %{
+        dob: 1978,
+        end: 2022,
+        genderLabel: "male",
+        memberLabel: "Jeroen van Wijngaarden",
+        start: 2019
+      },
+      %{dob: 1985, end: 2021, genderLabel: "male", memberLabel: "Emiel van Dijk", start: 2018},
+      %{dob: 1976, end: 2021, genderLabel: "male", memberLabel: "Rutger Schonis", start: 2018},
+      %{dob: 1989, end: 2022, genderLabel: "male", memberLabel: "Thierry Aartsen", start: 2018},
+      %{dob: 1967, end: 2021, genderLabel: "male", memberLabel: "Tobias van Gent", start: 2018},
+      %{dob: 1968, end: 2021, genderLabel: "male", memberLabel: "Wim-Jan Renkema", start: 2018},
+      %{dob: 1970, end: 2022, genderLabel: "female", memberLabel: "Laura Bromet", start: 2018},
+      %{dob: 1987, end: 2021, genderLabel: "male", memberLabel: "Paul Smeulders", start: 2018},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "John Kerstens", start: 2018},
+      %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Chris Stoffer", start: 2018},
+      %{dob: 1955, end: 2021, genderLabel: "male", memberLabel: "Henk van Gerven", start: 2018},
+      %{dob: 1988, end: 2022, genderLabel: "male", memberLabel: "Mahir Alkaya", start: 2018},
+      %{
+        dob: 1943,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Lenny Geluk-Poortvliet",
+        start: 2017
+      },
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2017},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Matthijs Sienot", start: 2017},
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Evert Jan Slootweg", start: 2017},
+      %{
+        dob: 1965,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Antoinette Laan-Geselschap",
+        start: 2017
+      },
+      %{dob: 1978, end: 2022, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2017},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Joost Sneller", start: 2017},
+      %{dob: 1972, end: 2022, genderLabel: "female", memberLabel: "Judith Tielen", ...},
+      %{dob: 1960, end: 2021, genderLabel: "male", ...},
+      %{dob: 1968, end: 2021, ...},
+      %{dob: 1955, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2020 => [
+      %{dob: 1966, end: 2021, genderLabel: "male", memberLabel: "Chris Jansen", start: 2019},
+      %{dob: 1970, end: 2021, genderLabel: "male", memberLabel: "Bart Smals", start: 2019},
+      %{dob: 1985, end: 2022, genderLabel: "female", memberLabel: "Bente Becker", start: 2019},
+      %{dob: 1986, end: 2022, genderLabel: "female", memberLabel: "Eva van Esch", start: 2019},
+      %{dob: 1967, end: 2020, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2019},
+      %{
+        dob: 1984,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Stieneke van der Graaf",
+        start: 2019
+      },
+      %{
+        dob: 1983,
+        end: 2020,
+        genderLabel: "female",
+        memberLabel: "Femke Merel van Kooten-Arissen",
+        start: 2019
+      },
+      %{dob: 1957, end: 2021, genderLabel: "female", memberLabel: "Léonie Sazias", start: 2019},
+      %{dob: 1975, end: 2021, genderLabel: "female", memberLabel: "Kelly Regterschot", start: 2019},
+      %{
+        dob: 1949,
+        end: 2021,
+        genderLabel: "male",
+        memberLabel: "Gerrit-Jan van Otterloo",
+        start: 2019
+      },
+      %{dob: 1969, end: 2022, genderLabel: "male", memberLabel: "Mark Harbers", start: 2019},
+      %{dob: 1984, end: 2021, genderLabel: "male", memberLabel: "Niels van den Berge", start: 2019},
+      %{dob: 1977, end: 2021, genderLabel: "female", memberLabel: "Wytske Postma", start: 2019},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Hilde Palland", start: 2019},
+      %{
+        dob: 1978,
+        end: 2022,
+        genderLabel: "male",
+        memberLabel: "Jeroen van Wijngaarden",
+        start: 2019
+      },
+      %{dob: 1985, end: 2021, genderLabel: "male", memberLabel: "Emiel van Dijk", start: 2018},
+      %{dob: 1976, end: 2021, genderLabel: "male", memberLabel: "Rutger Schonis", start: 2018},
+      %{dob: 1989, end: 2022, genderLabel: "male", memberLabel: "Thierry Aartsen", start: 2018},
+      %{dob: 1967, end: 2021, genderLabel: "male", memberLabel: "Tobias van Gent", start: 2018},
+      %{dob: 1983, end: 2020, genderLabel: "female", memberLabel: "Gabriëlle Popken", start: 2018},
+      %{dob: 1968, end: 2021, genderLabel: "male", memberLabel: "Wim-Jan Renkema", start: 2018},
+      %{dob: 1970, end: 2022, genderLabel: "female", memberLabel: "Laura Bromet", start: 2018},
+      %{dob: 1987, end: 2021, genderLabel: "male", memberLabel: "Paul Smeulders", start: 2018},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "John Kerstens", start: 2018},
+      %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Chris Stoffer", start: 2018},
+      %{dob: 1955, end: 2021, genderLabel: "male", memberLabel: "Henk van Gerven", start: 2018},
+      %{dob: 1988, end: 2022, genderLabel: "male", memberLabel: "Mahir Alkaya", start: 2018},
+      %{dob: 1963, end: 2020, genderLabel: "female", memberLabel: "Monica den Boer", start: 2017},
+      %{
+        dob: 1943,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Lenny Geluk-Poortvliet",
+        start: 2017
+      },
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2017},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Matthijs Sienot", start: 2017},
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Evert Jan Slootweg", start: 2017},
+      %{
+        dob: 1965,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Antoinette Laan-Geselschap",
+        start: 2017
+      },
+      %{dob: 1978, end: 2022, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2017},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Joost Sneller", start: 2017},
+      %{dob: 1972, end: 2022, genderLabel: "female", memberLabel: "Judith Tielen", start: 2017},
+      %{dob: 1960, end: 2021, genderLabel: "male", memberLabel: "William Moorlag", start: 2017},
+      %{dob: 1968, end: 2021, genderLabel: "male", memberLabel: "Roald van der Linde", start: 2017},
+      %{dob: 1955, end: 2021, genderLabel: "male", memberLabel: "Albert van den Bosch", start: 2017},
+      %{dob: 1944, end: 2020, genderLabel: "male", memberLabel: "Theo Hiddema", start: 2017},
+      %{dob: 1962, end: 2022, genderLabel: "female", memberLabel: "Lilianne Ploumen", start: 2017},
+      %{dob: 1981, end: 2021, genderLabel: "male", memberLabel: "Klaas Dijkhoff", ...},
+      %{dob: 1970, end: 2021, genderLabel: "female", ...},
+      %{dob: 1991, end: 2020, ...},
+      %{dob: 1974, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2019 => [
+      %{dob: 1985, end: 2021, genderLabel: "male", memberLabel: "Emiel van Dijk", start: 2018},
+      %{dob: 1973, end: 2019, genderLabel: "male", memberLabel: "Simon Geleijnse", start: 2018},
+      %{dob: 1992, end: 2019, genderLabel: "female", memberLabel: "Eva Akerboom", start: 2018},
+      %{
+        dob: 1985,
+        end: 2019,
+        genderLabel: "female",
+        memberLabel: "Christine Teunissen",
+        start: 2018
+      },
+      %{dob: 1976, end: 2021, genderLabel: "male", memberLabel: "Rutger Schonis", start: 2018},
+      %{dob: 1989, end: 2022, genderLabel: "male", memberLabel: "Thierry Aartsen", start: 2018},
+      %{dob: 1967, end: 2021, genderLabel: "male", memberLabel: "Tobias van Gent", start: 2018},
+      %{dob: 1983, end: 2020, genderLabel: "female", memberLabel: "Gabriëlle Popken", start: 2018},
+      %{dob: 1968, end: 2021, genderLabel: "male", memberLabel: "Wim-Jan Renkema", start: 2018},
+      %{dob: 1970, end: 2022, genderLabel: "female", memberLabel: "Laura Bromet", start: 2018},
+      %{dob: 1987, end: 2021, genderLabel: "male", memberLabel: "Paul Smeulders", start: 2018},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "John Kerstens", start: 2018},
+      %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Chris Stoffer", start: 2018},
+      %{dob: 1955, end: 2021, genderLabel: "male", memberLabel: "Henk van Gerven", start: 2018},
+      %{dob: 1988, end: 2022, genderLabel: "male", memberLabel: "Mahir Alkaya", start: 2018},
+      %{dob: 1963, end: 2020, genderLabel: "female", memberLabel: "Monica den Boer", start: 2017},
+      %{
+        dob: 1943,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Lenny Geluk-Poortvliet",
+        start: 2017
+      },
+      %{dob: 1972, end: 2019, genderLabel: "male", memberLabel: "Leendert de Lange", start: 2017},
+      %{dob: 1967, end: 2019, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2017},
+      %{
+        dob: 1984,
+        end: 2019,
+        genderLabel: "female",
+        memberLabel: "Stieneke van der Graaf",
+        start: 2017
+      },
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2017},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Matthijs Sienot", start: 2017},
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Evert Jan Slootweg", start: 2017},
+      %{
+        dob: 1965,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Antoinette Laan-Geselschap",
+        start: 2017
+      },
+      %{dob: 1978, end: 2022, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2017},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Joost Sneller", start: 2017},
+      %{dob: 1972, end: 2022, genderLabel: "female", memberLabel: "Judith Tielen", start: 2017},
+      %{dob: 1960, end: 2021, genderLabel: "male", memberLabel: "William Moorlag", start: 2017},
+      %{dob: 1968, end: 2021, genderLabel: "male", memberLabel: "Roald van der Linde", start: 2017},
+      %{dob: 1955, end: 2021, genderLabel: "male", memberLabel: "Albert van den Bosch", start: 2017},
+      %{dob: 1944, end: 2020, genderLabel: "male", memberLabel: "Theo Hiddema", start: 2017},
+      %{dob: 1962, end: 2022, genderLabel: "female", memberLabel: "Lilianne Ploumen", start: 2017},
+      %{dob: 1981, end: 2021, genderLabel: "male", memberLabel: "Klaas Dijkhoff", start: 2017},
+      %{
+        dob: 1970,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Kathalijne Buitenweg",
+        start: 2017
+      },
+      %{dob: 1991, end: 2020, genderLabel: "male", memberLabel: "Rens Raemakers", start: 2017},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Arne Weverling", start: 2017},
+      %{dob: 1965, end: 2020, genderLabel: "female", memberLabel: "Isabelle Diks", start: 2017},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2017},
+      %{dob: 1960, end: 2021, genderLabel: "male", memberLabel: "Maurits von Martels", start: 2017},
+      %{dob: 1981, end: 2019, genderLabel: "male", memberLabel: "Zihni Özdil", start: 2017},
+      %{dob: 1987, end: 2022, genderLabel: "female", memberLabel: "Anne Kuik", ...},
+      %{dob: 1986, end: 2021, genderLabel: "male", ...},
+      %{dob: 1985, end: 2019, ...},
+      %{dob: 1974, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2018 => [
+      %{dob: 1963, end: 2020, genderLabel: "female", memberLabel: "Monica den Boer", start: 2017},
+      %{
+        dob: 1943,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Lenny Geluk-Poortvliet",
+        start: 2017
+      },
+      %{dob: 1972, end: 2019, genderLabel: "male", memberLabel: "Leendert de Lange", start: 2017},
+      %{dob: 1967, end: 2019, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2017},
+      %{
+        dob: 1984,
+        end: 2019,
+        genderLabel: "female",
+        memberLabel: "Stieneke van der Graaf",
+        start: 2017
+      },
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2017},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Matthijs Sienot", start: 2017},
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Evert Jan Slootweg", start: 2017},
+      %{
+        dob: 1965,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Antoinette Laan-Geselschap",
+        start: 2017
+      },
+      %{dob: 1978, end: 2022, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2017},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Joost Sneller", start: 2017},
+      %{dob: 1972, end: 2022, genderLabel: "female", memberLabel: "Judith Tielen", start: 2017},
+      %{dob: 1960, end: 2021, genderLabel: "male", memberLabel: "William Moorlag", start: 2017},
+      %{dob: 1968, end: 2021, genderLabel: "male", memberLabel: "Roald van der Linde", start: 2017},
+      %{dob: 1955, end: 2021, genderLabel: "male", memberLabel: "Albert van den Bosch", start: 2017},
+      %{dob: 1944, end: 2020, genderLabel: "male", memberLabel: "Theo Hiddema", start: 2017},
+      %{dob: 1962, end: 2022, genderLabel: "female", memberLabel: "Lilianne Ploumen", start: 2017},
+      %{dob: 1957, end: 2018, genderLabel: "female", memberLabel: "Léonie Sazias", start: 2017},
+      %{dob: 1967, end: 2018, genderLabel: "female", memberLabel: "Karen Gerbrands", start: 2017},
+      %{dob: 1981, end: 2021, genderLabel: "male", memberLabel: "Klaas Dijkhoff", start: 2017},
+      %{
+        dob: 1970,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Kathalijne Buitenweg",
+        start: 2017
+      },
+      %{dob: 1991, end: 2020, genderLabel: "male", memberLabel: "Rens Raemakers", start: 2017},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Arne Weverling", start: 2017},
+      %{dob: 1965, end: 2020, genderLabel: "female", memberLabel: "Isabelle Diks", start: 2017},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2017},
+      %{dob: 1960, end: 2021, genderLabel: "male", memberLabel: "Maurits von Martels", start: 2017},
+      %{dob: 1981, end: 2019, genderLabel: "male", memberLabel: "Zihni Özdil", start: 2017},
+      %{dob: 1987, end: 2022, genderLabel: "female", memberLabel: "Anne Kuik", start: 2017},
+      %{dob: 1986, end: 2021, genderLabel: "male", memberLabel: "Dennis Wiersma", start: 2017},
+      %{dob: 1985, end: 2019, genderLabel: "female", memberLabel: "Bente Becker", start: 2017},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Lodewijk Asscher", start: 2017},
+      %{dob: 1976, end: 2021, genderLabel: "female", memberLabel: "Suzanne Kröger", start: 2017},
+      %{dob: 1973, end: 2021, genderLabel: "male", memberLabel: "Sven Koopmans", start: 2017},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Achraf Bouali", start: 2017},
+      %{
+        dob: 1977,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Dilan Yeşilgöz-Zegerius",
+        start: 2017
+      },
+      %{dob: 1975, end: 2021, genderLabel: "male", memberLabel: "Jan Middendorp", start: 2017},
+      %{dob: 1954, end: 2021, genderLabel: "male", memberLabel: "Bram van Ojik", start: 2017},
+      %{dob: 1983, end: 2018, genderLabel: "female", memberLabel: "Gabriëlle Popken", start: 2017},
+      %{dob: 1960, end: 2021, genderLabel: "female", memberLabel: "Corrie van Brenk", start: 2017},
+      %{dob: 1980, end: 2021, genderLabel: "male", memberLabel: "Harry van der Molen", ...},
+      %{dob: 1966, end: 2021, genderLabel: "male", ...},
+      %{dob: 1971, end: 2018, ...},
+      %{dob: 1973, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2017 => [
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Emre Ünver", start: 2016},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Jock Geselschap", start: 2016},
+      %{dob: 1962, end: 2017, genderLabel: "male", memberLabel: "Jacques Monasch", start: 2016},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Rien van der Velde", start: 2016},
+      %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Esther Ouwehand", start: 2016},
+      %{dob: 1972, end: 2017, genderLabel: "male", memberLabel: "Daniël van der Ree", start: 2016},
+      %{dob: 1972, end: 2017, genderLabel: "female", memberLabel: "Amma Asante", start: 2016},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Harm Brouwer", start: 2016},
+      %{dob: 1979, end: 2017, genderLabel: "female", memberLabel: "Lea Bouwmeester", start: 2016},
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Remco Bosma", start: 2016},
+      %{dob: 1978, end: 2022, genderLabel: "female", memberLabel: "Salima Belhaj", start: 2016},
+      %{dob: 1976, end: 2017, genderLabel: "female", memberLabel: "Manon Fokke", start: 2016},
+      %{dob: 1970, end: 2022, genderLabel: "male", memberLabel: "Mustafa Amhaouch", start: 2016},
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Eppo Bruins", start: 2015},
+      %{dob: 1961, end: 2017, genderLabel: "female", memberLabel: "Judith Swinkels", start: 2015},
+      %{dob: 1985, end: 2017, genderLabel: "female", memberLabel: "Joyce Vermue", start: 2015},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Fatma Koşer Kaya", start: 2015},
+      %{dob: 1961, end: 2018, genderLabel: "male", memberLabel: "Rik Grashoff", start: 2015},
+      %{dob: 1967, end: 2020, genderLabel: "male", memberLabel: "Erik Ronnes", start: 2015},
+      %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Fleur Agema", start: 2015},
+      %{dob: 1972, end: 2017, genderLabel: "male", memberLabel: "Leendert de Lange", start: 2015},
+      %{
+        dob: 1973,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Chantal Nijkerken-de Haan",
+        start: 2015
+      },
+      %{dob: 1958, end: 2017, genderLabel: "male", memberLabel: "Fred Teeven", start: 2015},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Johan Houwers", start: 2015},
+      %{dob: 1979, end: 2018, genderLabel: "female", memberLabel: "Linda Voortman", start: 2015},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2014},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2014},
+      %{dob: 1972, end: 2017, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2014},
+      %{dob: 1956, end: 2017, genderLabel: "male", memberLabel: "Norbert Klein", start: 2014},
+      %{dob: 1978, end: 2021, genderLabel: "male", memberLabel: "Martijn van Helvert", start: 2014},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Henk Leenders", start: 2014},
+      %{dob: 1950, end: 2020, genderLabel: "male", memberLabel: "Henk Krol", start: 2014},
+      %{
+        dob: 1978,
+        end: 2017,
+        genderLabel: "male",
+        memberLabel: "Jeroen van Wijngaarden",
+        start: 2014
+      },
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2014},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Renske Leijten", start: 2014},
+      %{dob: 1979, end: 2017, genderLabel: "male", memberLabel: "Joram van Klaveren", start: 2014},
+      %{dob: 1956, end: 2017, genderLabel: "male", memberLabel: "Louis Bontes", start: 2014},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Michiel van Nispen", start: 2014},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Roland van Vliet", ...},
+      %{dob: 1981, end: 2017, genderLabel: "female", ...},
+      %{dob: 1967, end: 2017, ...},
+      %{dob: 1977, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2016 => [
+      %{dob: 1969, end: 2021, genderLabel: "male", memberLabel: "Eppo Bruins", start: 2015},
+      %{dob: 1966, end: 2016, genderLabel: "male", memberLabel: "Frank Wassenberg", start: 2015},
+      %{dob: 1957, end: 2016, genderLabel: "male", memberLabel: "Harm Brouwer", start: 2015},
+      %{dob: 1961, end: 2017, genderLabel: "female", memberLabel: "Judith Swinkels", start: 2015},
+      %{dob: 1985, end: 2017, genderLabel: "female", memberLabel: "Joyce Vermue", start: 2015},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Fatma Koşer Kaya", start: 2015},
+      %{dob: 1961, end: 2018, genderLabel: "male", memberLabel: "Rik Grashoff", start: 2015},
+      %{dob: 1967, end: 2020, genderLabel: "male", memberLabel: "Erik Ronnes", start: 2015},
+      %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Fleur Agema", start: 2015},
+      %{dob: 1972, end: 2017, genderLabel: "male", memberLabel: "Leendert de Lange", start: 2015},
+      %{
+        dob: 1973,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Chantal Nijkerken-de Haan",
+        start: 2015
+      },
+      %{dob: 1958, end: 2017, genderLabel: "male", memberLabel: "Fred Teeven", start: 2015},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Johan Houwers", start: 2015},
+      %{dob: 1979, end: 2018, genderLabel: "female", memberLabel: "Linda Voortman", start: 2015},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2014},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2014},
+      %{dob: 1972, end: 2017, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2014},
+      %{dob: 1956, end: 2017, genderLabel: "male", memberLabel: "Norbert Klein", start: 2014},
+      %{dob: 1978, end: 2021, genderLabel: "male", memberLabel: "Martijn van Helvert", start: 2014},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Henk Leenders", start: 2014},
+      %{dob: 1950, end: 2020, genderLabel: "male", memberLabel: "Henk Krol", start: 2014},
+      %{
+        dob: 1978,
+        end: 2017,
+        genderLabel: "male",
+        memberLabel: "Jeroen van Wijngaarden",
+        start: 2014
+      },
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2014},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Renske Leijten", start: 2014},
+      %{dob: 1979, end: 2017, genderLabel: "male", memberLabel: "Joram van Klaveren", start: 2014},
+      %{dob: 1956, end: 2017, genderLabel: "male", memberLabel: "Louis Bontes", start: 2014},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Michiel van Nispen", start: 2014},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Roland van Vliet", start: 2014},
+      %{dob: 1981, end: 2017, genderLabel: "female", memberLabel: "Tjitske Siderius", start: 2014},
+      %{dob: 1967, end: 2017, genderLabel: "male", memberLabel: "Perjan Moors", start: 2014},
+      %{dob: 1977, end: 2017, genderLabel: "female", memberLabel: "Yasemin Çegerek", start: 2013},
+      %{dob: 1975, end: 2021, genderLabel: "female", memberLabel: "Sadet Karabulut", start: 2013},
+      %{dob: 1979, end: 2016, genderLabel: "female", memberLabel: "Lea Bouwmeester", start: 2013},
+      %{dob: 1972, end: 2017, genderLabel: "female", memberLabel: "Marith Volp", start: 2013},
+      %{dob: 1978, end: 2017, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2013},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Roelof van Laar", start: 2013},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Eric Smaling", start: 2013},
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Joost Taverne", ...},
+      %{dob: 1984, end: 2017, genderLabel: "male", ...},
+      %{dob: 1965, end: 2017, ...},
+      %{dob: 1964, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2015 => [
+      %{dob: 1976, end: 2015, genderLabel: "female", memberLabel: "Corinne Ellemeet", start: 2014},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2014},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2014},
+      %{dob: 1972, end: 2017, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2014},
+      %{dob: 1956, end: 2017, genderLabel: "male", memberLabel: "Norbert Klein", start: 2014},
+      %{dob: 1978, end: 2021, genderLabel: "male", memberLabel: "Martijn van Helvert", start: 2014},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Henk Leenders", start: 2014},
+      %{dob: 1950, end: 2020, genderLabel: "male", memberLabel: "Henk Krol", start: 2014},
+      %{
+        dob: 1978,
+        end: 2017,
+        genderLabel: "male",
+        memberLabel: "Jeroen van Wijngaarden",
+        start: 2014
+      },
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Hayke Veldman", start: 2014},
+      %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Renske Leijten", start: 2014},
+      %{dob: 1979, end: 2017, genderLabel: "male", memberLabel: "Joram van Klaveren", start: 2014},
+      %{dob: 1956, end: 2017, genderLabel: "male", memberLabel: "Louis Bontes", start: 2014},
+      %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Michiel van Nispen", start: 2014},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Roland van Vliet", start: 2014},
+      %{dob: 1981, end: 2017, genderLabel: "female", memberLabel: "Tjitske Siderius", start: 2014},
+      %{dob: 1967, end: 2017, genderLabel: "male", memberLabel: "Perjan Moors", start: 2014},
+      %{dob: 1977, end: 2017, genderLabel: "female", memberLabel: "Yasemin Çegerek", start: 2013},
+      %{dob: 1975, end: 2021, genderLabel: "female", memberLabel: "Sadet Karabulut", start: 2013},
+      %{dob: 1979, end: 2016, genderLabel: "female", memberLabel: "Lea Bouwmeester", start: 2013},
+      %{dob: 1972, end: 2017, genderLabel: "female", memberLabel: "Marith Volp", start: 2013},
+      %{dob: 1978, end: 2017, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2013},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Roelof van Laar", start: 2013},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Eric Smaling", start: 2013},
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Joost Taverne", start: 2012},
+      %{dob: 1984, end: 2017, genderLabel: "male", memberLabel: "Duco Hoogland", start: 2012},
+      %{dob: 1965, end: 2017, genderLabel: "male", memberLabel: "Ronald Vuijk", start: 2012},
+      %{dob: 1964, end: 2022, genderLabel: "female", memberLabel: "Aukje de Vries", start: 2012},
+      %{dob: 1957, end: 2017, genderLabel: "female", memberLabel: "Grace Tanamal", start: 2012},
+      %{dob: 1974, end: 2017, genderLabel: "male", memberLabel: "Sjoerd Potters", start: 2012},
+      %{
+        dob: 1961,
+        end: 2017,
+        genderLabel: "female",
+        memberLabel: "Sultan Günal-Gezer",
+        start: 2012
+      },
+      %{dob: 1968, end: 2017, genderLabel: "male", memberLabel: "Roald van der Linde", start: 2012},
+      %{dob: 1960, end: 2016, genderLabel: "male", memberLabel: "Peter Oskam", start: 2012},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Mona Keijzer", start: 2012},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Halbe Zijlstra", start: 2012},
+      %{dob: 1974, end: 2022, genderLabel: "female", memberLabel: "Ockje Tellegen", start: 2012},
+      %{dob: 1979, end: 2020, genderLabel: "male", memberLabel: "Bas van 't Wout", ...},
+      %{dob: 1981, end: 2015, genderLabel: "male", ...},
+      %{dob: 1975, end: 2016, ...},
+      %{dob: 1972, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2014 => [
+      %{dob: 1977, end: 2017, genderLabel: "female", memberLabel: "Yasemin Çegerek", start: 2013},
+      %{dob: 1975, end: 2021, genderLabel: "female", memberLabel: "Sadet Karabulut", start: 2013},
+      %{dob: 1956, end: 2014, genderLabel: "male", memberLabel: "Louis Bontes", start: 2013},
+      %{
+        dob: 1958,
+        end: 2014,
+        genderLabel: "female",
+        memberLabel: "Martine Baay-Timmerman",
+        start: 2013
+      },
+      %{dob: 1979, end: 2016, genderLabel: "female", memberLabel: "Lea Bouwmeester", start: 2013},
+      %{dob: 1972, end: 2017, genderLabel: "female", memberLabel: "Marith Volp", start: 2013},
+      %{dob: 1978, end: 2017, genderLabel: "male", memberLabel: "Rudmer Heerema", start: 2013},
+      %{dob: 1981, end: 2017, genderLabel: "male", memberLabel: "Roelof van Laar", start: 2013},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Eric Smaling", start: 2013},
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Joost Taverne", start: 2012},
+      %{dob: 1984, end: 2017, genderLabel: "male", memberLabel: "Duco Hoogland", start: 2012},
+      %{dob: 1972, end: 2014, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2012},
+      %{dob: 1965, end: 2017, genderLabel: "male", memberLabel: "Ronald Vuijk", start: 2012},
+      %{dob: 1964, end: 2022, genderLabel: "female", memberLabel: "Aukje de Vries", start: 2012},
+      %{dob: 1957, end: 2017, genderLabel: "female", memberLabel: "Grace Tanamal", start: 2012},
+      %{dob: 1974, end: 2017, genderLabel: "male", memberLabel: "Sjoerd Potters", start: 2012},
+      %{
+        dob: 1961,
+        end: 2017,
+        genderLabel: "female",
+        memberLabel: "Sultan Günal-Gezer",
+        start: 2012
+      },
+      %{dob: 1968, end: 2017, genderLabel: "male", memberLabel: "Roald van der Linde", start: 2012},
+      %{dob: 1979, end: 2014, genderLabel: "female", memberLabel: "Linda Voortman", start: 2012},
+      %{dob: 1956, end: 2014, genderLabel: "male", memberLabel: "Norbert Klein", start: 2012},
+      %{dob: 1960, end: 2016, genderLabel: "male", memberLabel: "Peter Oskam", start: 2012},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Mona Keijzer", start: 2012},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Halbe Zijlstra", start: 2012},
+      %{dob: 1974, end: 2022, genderLabel: "female", memberLabel: "Ockje Tellegen", start: 2012},
+      %{dob: 1979, end: 2020, genderLabel: "male", memberLabel: "Bas van 't Wout", start: 2012},
+      %{dob: 1968, end: 2014, genderLabel: "male", memberLabel: "Pieter Litjens", start: 2012},
+      %{dob: 1981, end: 2015, genderLabel: "male", memberLabel: "Klaas Dijkhoff", start: 2012},
+      %{dob: 1975, end: 2016, genderLabel: "male", memberLabel: "Otwin van Dijk", start: 2012},
+      %{dob: 1981, end: 2014, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2012},
+      %{dob: 1981, end: 2014, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2012},
+      %{dob: 1972, end: 2017, genderLabel: "female", memberLabel: "Marit Maij", start: 2012},
+      %{dob: 1985, end: 2017, genderLabel: "male", memberLabel: "Mohammed Mohandis", start: 2012},
+      %{dob: 1977, end: 2019, genderLabel: "male", memberLabel: "Foort van Oosten", start: 2012},
+      %{dob: 1971, end: 2016, genderLabel: "male", memberLabel: "Michiel van Veen", start: 2012},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Albert de Vries", start: 2012},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Keklik Yücel", ...},
+      %{dob: 1954, end: 2015, genderLabel: "male", ...},
+      %{dob: 1970, end: 2017, ...},
+      %{dob: 1980, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2013 => [
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Joost Taverne", start: 2012},
+      %{dob: 1957, end: 2013, genderLabel: "male", memberLabel: "Johan Houwers", start: 2012},
+      %{dob: 1984, end: 2017, genderLabel: "male", memberLabel: "Duco Hoogland", start: 2012},
+      %{dob: 1972, end: 2014, genderLabel: "male", memberLabel: "Selçuk Öztürk", start: 2012},
+      %{dob: 1965, end: 2017, genderLabel: "male", memberLabel: "Ronald Vuijk", start: 2012},
+      %{dob: 1964, end: 2022, genderLabel: "female", memberLabel: "Aukje de Vries", start: 2012},
+      %{dob: 1957, end: 2017, genderLabel: "female", memberLabel: "Grace Tanamal", start: 2012},
+      %{dob: 1974, end: 2017, genderLabel: "male", memberLabel: "Sjoerd Potters", start: 2012},
+      %{
+        dob: 1961,
+        end: 2017,
+        genderLabel: "female",
+        memberLabel: "Sultan Günal-Gezer",
+        start: 2012
+      },
+      %{dob: 1968, end: 2017, genderLabel: "male", memberLabel: "Roald van der Linde", start: 2012},
+      %{dob: 1979, end: 2014, genderLabel: "female", memberLabel: "Linda Voortman", start: 2012},
+      %{dob: 1956, end: 2014, genderLabel: "male", memberLabel: "Norbert Klein", start: 2012},
+      %{dob: 1960, end: 2016, genderLabel: "male", memberLabel: "Peter Oskam", start: 2012},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Mona Keijzer", start: 2012},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Halbe Zijlstra", start: 2012},
+      %{dob: 1974, end: 2022, genderLabel: "female", memberLabel: "Ockje Tellegen", start: 2012},
+      %{dob: 1979, end: 2020, genderLabel: "male", memberLabel: "Bas van 't Wout", start: 2012},
+      %{dob: 1968, end: 2014, genderLabel: "male", memberLabel: "Pieter Litjens", start: 2012},
+      %{dob: 1981, end: 2015, genderLabel: "male", memberLabel: "Klaas Dijkhoff", start: 2012},
+      %{dob: 1975, end: 2016, genderLabel: "male", memberLabel: "Otwin van Dijk", start: 2012},
+      %{dob: 1959, end: 2013, genderLabel: "female", memberLabel: "Désirée Bonis", start: 2012},
+      %{dob: 1981, end: 2014, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2012},
+      %{dob: 1981, end: 2014, genderLabel: "male", memberLabel: "Tunahan Kuzu", start: 2012},
+      %{dob: 1972, end: 2017, genderLabel: "female", memberLabel: "Marit Maij", start: 2012},
+      %{dob: 1985, end: 2017, genderLabel: "male", memberLabel: "Mohammed Mohandis", start: 2012},
+      %{dob: 1977, end: 2019, genderLabel: "male", memberLabel: "Foort van Oosten", start: 2012},
+      %{dob: 1971, end: 2016, genderLabel: "male", memberLabel: "Michiel van Veen", start: 2012},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Albert de Vries", start: 2012},
+      %{dob: 1968, end: 2017, genderLabel: "female", memberLabel: "Keklik Yücel", start: 2012},
+      %{dob: 1954, end: 2015, genderLabel: "male", memberLabel: "Bram van Ojik", start: 2012},
+      %{dob: 1970, end: 2017, genderLabel: "female", memberLabel: "Mei Li Vos", start: 2012},
+      %{dob: 1980, end: 2017, genderLabel: "female", memberLabel: "Loes Ypma", start: 2012},
+      %{dob: 1972, end: 2021, genderLabel: "male", memberLabel: "Remco Dijkstra", start: 2012},
+      %{dob: 1972, end: 2019, genderLabel: "male", memberLabel: "Arno Rutte", start: 2012},
+      %{dob: 1967, end: 2017, genderLabel: "female", memberLabel: "Reinette Klever", ...},
+      %{dob: 1968, end: 2017, genderLabel: "male", ...},
+      %{dob: 1965, end: 2017, ...},
+      %{dob: 1950, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2012 => [
+      %{
+        dob: 1967,
+        end: 2017,
+        genderLabel: "female",
+        memberLabel: "Ybeltje Berckmoes-Duindam",
+        start: 2011
+      },
+      %{dob: 1968, end: 2012, genderLabel: "female", memberLabel: "Nebahat Albayrak", start: 2011},
+      %{dob: 1956, end: 2012, genderLabel: "male", memberLabel: "Michiel Holtackers", start: 2011},
+      %{dob: 1967, end: 2017, genderLabel: "female", memberLabel: "Ingrid de Caluwé", start: 2011},
+      %{dob: 1977, end: 2017, genderLabel: "female", memberLabel: "Carola Schouten", start: 2011},
+      %{dob: 1975, end: 2013, genderLabel: "female", memberLabel: "Sadet Karabulut", start: 2011},
+      %{dob: 1969, end: 2012, genderLabel: "female", memberLabel: "Mariko Peters", start: 2011},
+      %{
+        dob: 1959,
+        end: 2012,
+        genderLabel: "female",
+        memberLabel: "Marieke van der Werf",
+        start: 2011
+      },
+      %{
+        dob: 1948,
+        end: 2012,
+        genderLabel: "male",
+        memberLabel: "Ino van den Besselaar",
+        start: 2010
+      },
+      %{dob: 1961, end: 2012, genderLabel: "male", memberLabel: "Rik Grashoff", start: 2010},
+      %{dob: 1960, end: 2013, genderLabel: "male", memberLabel: "Matthijs Huizing", start: 2010},
+      %{dob: 1971, end: 2012, genderLabel: "male", memberLabel: "Joost Taverne", start: 2010},
+      %{dob: 1956, end: 2012, genderLabel: "male", memberLabel: "Jack Biskop", start: 2010},
+      %{dob: 1957, end: 2012, genderLabel: "male", memberLabel: "Johan Houwers", start: 2010},
+      %{dob: 1976, end: 2016, genderLabel: "male", memberLabel: "Bart de Liefde", start: 2010},
+      %{dob: 1950, end: 2012, genderLabel: "male", memberLabel: "Bas Jan van Bochove", start: 2010},
+      %{dob: 1974, end: 2012, genderLabel: "male", memberLabel: "Maarten Haverkamp", start: 2010},
+      %{dob: 1971, end: 2017, genderLabel: "female", memberLabel: "Karin Straus", start: 2010},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2010},
+      %{dob: 1968, end: 2015, genderLabel: "male", memberLabel: "René Leegte", start: 2010},
+      %{dob: 1965, end: 2015, genderLabel: "male", memberLabel: "Gerard Schouw", start: 2010},
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Raymond Knops", start: 2010},
+      %{dob: 1958, end: 2017, genderLabel: "female", memberLabel: "Agnes Wolbert", start: 2010},
+      %{dob: 1959, end: 2012, genderLabel: "male", memberLabel: "Jhim van Bemmel", start: 2010},
+      %{dob: 1967, end: 2016, genderLabel: "female", memberLabel: "Tanja Jadnanansing", start: 2010},
+      %{dob: 1960, end: 2012, genderLabel: "male", memberLabel: "André Elissen", start: 2010},
+      %{dob: 1976, end: 2021, genderLabel: "male", memberLabel: "Kees Verhoeven", start: 2010},
+      %{dob: 1970, end: 2012, genderLabel: "male", memberLabel: "Metin Çelik", start: 2010},
+      %{dob: 1954, end: 2021, genderLabel: "female", memberLabel: "Pia Dijkstra", start: 2010},
+      %{dob: 1967, end: 2012, genderLabel: "female", memberLabel: "Karen Gerbrands", start: 2010},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "André Bosman", start: 2010},
+      %{dob: 1981, end: 2012, genderLabel: "male", memberLabel: "Klaas Dijkhoff", start: 2010},
+      %{dob: 1965, end: 2012, genderLabel: "female", memberLabel: "Willie Dille", start: 2010},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Ed Groot", ...},
+      %{dob: 1969, end: 2017, genderLabel: "male", ...},
+      %{dob: 1979, end: 2014, ...},
+      %{dob: 1955, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2011 => [
+      %{
+        dob: 1948,
+        end: 2012,
+        genderLabel: "male",
+        memberLabel: "Ino van den Besselaar",
+        start: 2010
+      },
+      %{dob: 1961, end: 2012, genderLabel: "male", memberLabel: "Rik Grashoff", start: 2010},
+      %{dob: 1960, end: 2013, genderLabel: "male", memberLabel: "Matthijs Huizing", start: 2010},
+      %{dob: 1971, end: 2012, genderLabel: "male", memberLabel: "Joost Taverne", start: 2010},
+      %{dob: 1956, end: 2012, genderLabel: "male", memberLabel: "Jack Biskop", start: 2010},
+      %{dob: 1957, end: 2012, genderLabel: "male", memberLabel: "Johan Houwers", start: 2010},
+      %{dob: 1976, end: 2016, genderLabel: "male", memberLabel: "Bart de Liefde", start: 2010},
+      %{dob: 1950, end: 2012, genderLabel: "male", memberLabel: "Bas Jan van Bochove", start: 2010},
+      %{dob: 1974, end: 2012, genderLabel: "male", memberLabel: "Maarten Haverkamp", start: 2010},
+      %{dob: 1971, end: 2017, genderLabel: "female", memberLabel: "Karin Straus", start: 2010},
+      %{dob: 1974, end: 2021, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2010},
+      %{dob: 1968, end: 2015, genderLabel: "male", memberLabel: "René Leegte", start: 2010},
+      %{dob: 1965, end: 2015, genderLabel: "male", memberLabel: "Gerard Schouw", start: 2010},
+      %{dob: 1971, end: 2017, genderLabel: "male", memberLabel: "Raymond Knops", start: 2010},
+      %{dob: 1958, end: 2017, genderLabel: "female", memberLabel: "Agnes Wolbert", start: 2010},
+      %{dob: 1959, end: 2012, genderLabel: "male", memberLabel: "Jhim van Bemmel", start: 2010},
+      %{dob: 1967, end: 2016, genderLabel: "female", memberLabel: "Tanja Jadnanansing", start: 2010},
+      %{dob: 1960, end: 2012, genderLabel: "male", memberLabel: "André Elissen", start: 2010},
+      %{dob: 1962, end: 2011, genderLabel: "female", memberLabel: "Ank Bijleveld", start: 2010},
+      %{dob: 1976, end: 2021, genderLabel: "male", memberLabel: "Kees Verhoeven", start: 2010},
+      %{dob: 1970, end: 2012, genderLabel: "male", memberLabel: "Metin Çelik", start: 2010},
+      %{dob: 1954, end: 2021, genderLabel: "female", memberLabel: "Pia Dijkstra", start: 2010},
+      %{dob: 1967, end: 2012, genderLabel: "female", memberLabel: "Karen Gerbrands", start: 2010},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "André Bosman", start: 2010},
+      %{dob: 1981, end: 2012, genderLabel: "male", memberLabel: "Klaas Dijkhoff", start: 2010},
+      %{dob: 1965, end: 2012, genderLabel: "female", memberLabel: "Willie Dille", start: 2010},
+      %{dob: 1957, end: 2017, genderLabel: "male", memberLabel: "Ed Groot", start: 2010},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Ahmed Marcouch", start: 2010},
+      %{dob: 1979, end: 2014, genderLabel: "male", memberLabel: "Joram van Klaveren", start: 2010},
+      %{dob: 1955, end: 2012, genderLabel: "male", memberLabel: "Wim Kortenoeven", start: 2010},
+      %{dob: 1962, end: 2011, genderLabel: "male", memberLabel: "André Rouvoet", start: 2010},
+      %{dob: 1950, end: 2015, genderLabel: "female", memberLabel: "Magda Berndsen", start: 2010},
+      %{dob: 1967, end: 2017, genderLabel: "male", memberLabel: "Tjeerd van Dekken", ...},
+      %{dob: 1962, end: 2016, genderLabel: "male", ...},
+      %{dob: 1961, end: 2012, ...},
+      %{dob: 1969, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2010 => [
+      %{dob: 1963, end: 2010, genderLabel: "male", memberLabel: "Nihat Eski", start: 2009},
+      %{dob: 1969, end: 2017, genderLabel: "male", memberLabel: "Mark Harbers", start: 2009},
+      %{dob: 1976, end: 2012, genderLabel: "male", memberLabel: "Richard de Mos", start: 2009},
+      %{dob: 1963, end: 2010, genderLabel: "male", memberLabel: "Rendert Algra", start: 2009},
+      %{dob: 1964, end: 2010, genderLabel: "male", memberLabel: "Cees Meeuwis", start: 2009},
+      %{dob: 1972, end: 2010, genderLabel: "female", memberLabel: "Naïma Azough", start: 2009},
+      %{dob: 1957, end: 2010, genderLabel: "female", memberLabel: "Patricia Linhard", start: 2009},
+      %{dob: 1962, end: 2010, genderLabel: "male", memberLabel: "Hein Pieper", start: 2009},
+      %{dob: 1957, end: 2010, genderLabel: "female", memberLabel: "Trix de Roos", start: 2009},
+      %{dob: 1969, end: 2010, genderLabel: "female", memberLabel: "Mariko Peters", start: 2008},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Ton Elias", start: 2008},
+      %{dob: 1973, end: 2011, genderLabel: "female", memberLabel: "Sabine Uitslag", start: 2008},
+      %{dob: 1961, end: 2010, genderLabel: "female", memberLabel: "Ine Aasted-Madsen", start: 2008},
+      %{dob: 1963, end: 2012, genderLabel: "female", memberLabel: "Jolande Sap", start: 2008},
+      %{
+        dob: 1971,
+        end: 2010,
+        genderLabel: "female",
+        memberLabel: "Nicolien van Vroonhoven-Kok",
+        start: 2008
+      },
+      %{dob: 1973, end: 2012, genderLabel: "female", memberLabel: "Mirjam Sterk", start: 2008},
+      %{dob: 1985, end: 2013, genderLabel: "female", memberLabel: "Manja Smits", start: 2008},
+      %{dob: 1954, end: 2012, genderLabel: "female", memberLabel: "Margreeth Smilde", start: 2008},
+      %{dob: 1950, end: 2010, genderLabel: "male", memberLabel: "Jan Boelhouwer", start: 2008},
+      %{dob: 1988, end: 2017, genderLabel: "male", memberLabel: "Farshad Bashir", start: 2008},
+      %{dob: 1961, end: 2010, genderLabel: "female", memberLabel: "Anja Timmer", start: 2007},
+      %{dob: 1955, end: 2010, genderLabel: "female", memberLabel: "Rita Verdonk", start: 2007},
+      %{
+        dob: 1936,
+        end: 2010,
+        genderLabel: "female",
+        memberLabel: "Ans Willemse-van der Ploeg",
+        start: 2007
+      },
+      %{dob: 1971, end: 2010, genderLabel: "male", memberLabel: "Raymond Knops", start: 2007},
+      %{dob: 1953, end: 2010, genderLabel: "female", memberLabel: "Marjo van Dijken", start: 2007},
+      %{dob: 1967, end: 2010, genderLabel: "female", memberLabel: "Margot Kraneveldt", start: 2007},
+      %{dob: 1957, end: 2010, genderLabel: "female", memberLabel: "Antoinette Vietsch", start: 2007},
+      %{dob: 1970, end: 2010, genderLabel: "female", memberLabel: "Mei Li Vos", start: 2007},
+      %{dob: 1978, end: 2010, genderLabel: "male", memberLabel: "Ed Anker", start: 2007},
+      %{dob: 1967, end: 2010, genderLabel: "male", memberLabel: "Paul Tang", start: 2007},
+      %{dob: 1980, end: 2015, genderLabel: "male", memberLabel: "Sander de Rouwe", start: 2007},
+      %{dob: 1953, end: 2013, genderLabel: "male", memberLabel: "Pierre Heijnen", ...},
+      %{dob: 1968, end: 2021, genderLabel: "female", ...},
+      %{dob: 1975, end: 2012, ...},
+      %{dob: 1964, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2009 => [
+      %{dob: 1969, end: 2010, genderLabel: "female", memberLabel: "Mariko Peters", start: 2008},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Ton Elias", start: 2008},
+      %{dob: 1973, end: 2011, genderLabel: "female", memberLabel: "Sabine Uitslag", start: 2008},
+      %{dob: 1961, end: 2010, genderLabel: "female", memberLabel: "Ine Aasted-Madsen", start: 2008},
+      %{dob: 1963, end: 2012, genderLabel: "female", memberLabel: "Jolande Sap", start: 2008},
+      %{
+        dob: 1971,
+        end: 2010,
+        genderLabel: "female",
+        memberLabel: "Nicolien van Vroonhoven-Kok",
+        start: 2008
+      },
+      %{dob: 1973, end: 2012, genderLabel: "female", memberLabel: "Mirjam Sterk", start: 2008},
+      %{dob: 1985, end: 2013, genderLabel: "female", memberLabel: "Manja Smits", start: 2008},
+      %{dob: 1954, end: 2012, genderLabel: "female", memberLabel: "Margreeth Smilde", start: 2008},
+      %{dob: 1950, end: 2010, genderLabel: "male", memberLabel: "Jan Boelhouwer", start: 2008},
+      %{dob: 1988, end: 2017, genderLabel: "male", memberLabel: "Farshad Bashir", start: 2008},
+      %{dob: 1961, end: 2010, genderLabel: "female", memberLabel: "Anja Timmer", start: 2007},
+      %{dob: 1955, end: 2010, genderLabel: "female", memberLabel: "Rita Verdonk", start: 2007},
+      %{
+        dob: 1936,
+        end: 2010,
+        genderLabel: "female",
+        memberLabel: "Ans Willemse-van der Ploeg",
+        start: 2007
+      },
+      %{dob: 1971, end: 2010, genderLabel: "male", memberLabel: "Raymond Knops", start: 2007},
+      %{dob: 1953, end: 2010, genderLabel: "female", memberLabel: "Marjo van Dijken", start: 2007},
+      %{dob: 1967, end: 2010, genderLabel: "female", memberLabel: "Margot Kraneveldt", start: 2007},
+      %{dob: 1957, end: 2010, genderLabel: "female", memberLabel: "Antoinette Vietsch", start: 2007},
+      %{dob: 1970, end: 2010, genderLabel: "female", memberLabel: "Mei Li Vos", start: 2007},
+      %{dob: 1978, end: 2010, genderLabel: "male", memberLabel: "Ed Anker", start: 2007},
+      %{dob: 1967, end: 2010, genderLabel: "male", memberLabel: "Paul Tang", start: 2007},
+      %{dob: 1980, end: 2015, genderLabel: "male", memberLabel: "Sander de Rouwe", start: 2007},
+      %{dob: 1953, end: 2013, genderLabel: "male", memberLabel: "Pierre Heijnen", start: 2007},
+      %{
+        dob: 1968,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Madeleine van Toorenburg",
+        start: 2007
+      },
+      %{dob: 1975, end: 2012, genderLabel: "female", memberLabel: "Esmé Wiegman", start: 2007},
+      %{dob: 1964, end: 2010, genderLabel: "male", memberLabel: "Eddy Bilder", start: 2007},
+      %{dob: 1966, end: 2010, genderLabel: "female", memberLabel: "Corien Jonker", start: 2007},
+      %{dob: 1960, end: 2022, genderLabel: "female", memberLabel: "Khadija Arib", start: 2007},
+      %{dob: 1951, end: 2010, genderLabel: "male", memberLabel: "Hugo Polderman", start: 2006},
+      %{dob: 1952, end: 2017, genderLabel: "male", memberLabel: "Paul Ulenbelt", start: 2006},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "Joël Voordewind", ...},
+      %{dob: 1961, end: 2009, genderLabel: "male", ...},
+      %{dob: 1972, end: 2012, ...},
+      %{dob: 1969, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2008 => [
+      %{dob: 1961, end: 2010, genderLabel: "female", memberLabel: "Anja Timmer", start: 2007},
+      %{dob: 1955, end: 2010, genderLabel: "female", memberLabel: "Rita Verdonk", start: 2007},
+      %{
+        dob: 1936,
+        end: 2010,
+        genderLabel: "female",
+        memberLabel: "Ans Willemse-van der Ploeg",
+        start: 2007
+      },
+      %{dob: 1971, end: 2010, genderLabel: "male", memberLabel: "Raymond Knops", start: 2007},
+      %{dob: 1953, end: 2010, genderLabel: "female", memberLabel: "Marjo van Dijken", start: 2007},
+      %{dob: 1967, end: 2010, genderLabel: "female", memberLabel: "Margot Kraneveldt", start: 2007},
+      %{dob: 1957, end: 2010, genderLabel: "female", memberLabel: "Antoinette Vietsch", start: 2007},
+      %{dob: 1970, end: 2010, genderLabel: "female", memberLabel: "Mei Li Vos", start: 2007},
+      %{dob: 1978, end: 2010, genderLabel: "male", memberLabel: "Ed Anker", start: 2007},
+      %{dob: 1967, end: 2010, genderLabel: "male", memberLabel: "Paul Tang", start: 2007},
+      %{dob: 1980, end: 2015, genderLabel: "male", memberLabel: "Sander de Rouwe", start: 2007},
+      %{dob: 1953, end: 2013, genderLabel: "male", memberLabel: "Pierre Heijnen", start: 2007},
+      %{
+        dob: 1968,
+        end: 2021,
+        genderLabel: "female",
+        memberLabel: "Madeleine van Toorenburg",
+        start: 2007
+      },
+      %{dob: 1975, end: 2012, genderLabel: "female", memberLabel: "Esmé Wiegman", start: 2007},
+      %{dob: 1964, end: 2010, genderLabel: "male", memberLabel: "Eddy Bilder", start: 2007},
+      %{dob: 1966, end: 2010, genderLabel: "female", memberLabel: "Corien Jonker", start: 2007},
+      %{dob: 1960, end: 2022, genderLabel: "female", memberLabel: "Khadija Arib", start: 2007},
+      %{dob: 1951, end: 2010, genderLabel: "male", memberLabel: "Hugo Polderman", start: 2006},
+      %{dob: 1952, end: 2017, genderLabel: "male", memberLabel: "Paul Ulenbelt", start: 2006},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "Joël Voordewind", start: 2006},
+      %{dob: 1961, end: 2009, genderLabel: "male", memberLabel: "Ruud van Heugten", start: 2006},
+      %{dob: 1972, end: 2012, genderLabel: "female", memberLabel: "Marianne Thieme", start: 2006},
+      %{dob: 1969, end: 2010, genderLabel: "male", memberLabel: "Halbe Zijlstra", start: 2006},
+      %{dob: 1961, end: 2008, genderLabel: "male", memberLabel: "Jules Kortenhorst", start: 2006},
+      %{dob: 1956, end: 2010, genderLabel: "male", memberLabel: "Jack Biskop", start: 2006},
+      %{dob: 1974, end: 2010, genderLabel: "male", memberLabel: "Paul Lempens", start: 2006},
+      %{dob: 1972, end: 2019, genderLabel: "male", memberLabel: "Sietse Fritsma", start: 2006},
+      %{dob: 1951, end: 2010, genderLabel: "male", memberLabel: "Johan Remkes", start: 2006},
+      %{dob: 1976, end: 2015, genderLabel: "female", memberLabel: "Fleur Agema", start: 2006},
+      %{dob: 1969, end: 2009, genderLabel: "male", memberLabel: "Barry Madlener", ...},
+      %{dob: 1975, end: 2011, genderLabel: "female", ...},
+      %{dob: 1959, end: 2009, ...},
+      %{dob: 1972, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2007 => [
+      %{dob: 1951, end: 2010, genderLabel: "male", memberLabel: "Hugo Polderman", start: 2006},
+      %{dob: 1952, end: 2017, genderLabel: "male", memberLabel: "Paul Ulenbelt", start: 2006},
+      %{dob: 1965, end: 2021, genderLabel: "male", memberLabel: "Joël Voordewind", start: 2006},
+      %{dob: 1961, end: 2009, genderLabel: "male", memberLabel: "Ruud van Heugten", start: 2006},
+      %{dob: 1955, end: 2007, genderLabel: "female", memberLabel: "Rita Verdonk", start: 2006},
+      %{dob: 1972, end: 2012, genderLabel: "female", memberLabel: "Marianne Thieme", start: 2006},
+      %{dob: 1969, end: 2010, genderLabel: "male", memberLabel: "Halbe Zijlstra", start: 2006},
+      %{dob: 1961, end: 2008, genderLabel: "male", memberLabel: "Jules Kortenhorst", start: 2006},
+      %{dob: 1956, end: 2010, genderLabel: "male", memberLabel: "Jack Biskop", start: 2006},
+      %{dob: 1974, end: 2010, genderLabel: "male", memberLabel: "Paul Lempens", start: 2006},
+      %{dob: 1956, end: 2007, genderLabel: "male", memberLabel: "Jan Peter Balkenende", start: 2006},
+      %{dob: 1972, end: 2019, genderLabel: "male", memberLabel: "Sietse Fritsma", start: 2006},
+      %{dob: 1951, end: 2010, genderLabel: "male", memberLabel: "Johan Remkes", start: 2006},
+      %{dob: 1976, end: 2015, genderLabel: "female", memberLabel: "Fleur Agema", start: 2006},
+      %{dob: 1969, end: 2009, genderLabel: "male", memberLabel: "Barry Madlener", start: 2006},
+      %{dob: 1975, end: 2011, genderLabel: "female", memberLabel: "Sadet Karabulut", start: 2006},
+      %{dob: 1959, end: 2009, genderLabel: "male", memberLabel: "Arend Jan Boekestijn", start: 2006},
+      %{dob: 1972, end: 2010, genderLabel: "female", memberLabel: "Marianne Besselink", start: 2006},
+      %{dob: 1976, end: 2017, genderLabel: "female", memberLabel: "Sharon Gesthuizen", start: 2006},
+      %{
+        dob: 1949,
+        end: 2007,
+        genderLabel: "female",
+        memberLabel: "Maria van der Hoeven",
+        start: 2006
+      },
+      %{dob: 1948, end: 2007, genderLabel: "male", memberLabel: "Piet Hein Donner", start: 2006},
+      %{dob: 1958, end: 2010, genderLabel: "female", memberLabel: "Agnes Wolbert", start: 2006},
+      %{dob: 1979, end: 2014, genderLabel: "female", memberLabel: "Renske Leijten", start: 2006},
+      %{dob: 1950, end: 2008, genderLabel: "male", memberLabel: "Ron Abel", start: 2006},
+      %{dob: 1962, end: 2018, genderLabel: "male", memberLabel: "Emile Roemer", start: 2006},
+      %{dob: 1976, end: 2015, genderLabel: "female", memberLabel: "Esther Ouwehand", start: 2006},
+      %{dob: 1955, end: 2017, genderLabel: "male", memberLabel: "Henk van Gerven", start: 2006},
+      %{dob: 1980, end: 2012, genderLabel: "male", memberLabel: "Tofik Dibi", start: 2006},
+      %{dob: 1950, end: 2017, genderLabel: "female", memberLabel: "Helma Neppérus", ...},
+      %{dob: 1970, end: 2010, genderLabel: "female", ...},
+      %{dob: 1979, end: 2013, ...},
+      %{dob: 1969, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2006 => [
+      %{dob: 1946, end: 2006, genderLabel: "male", memberLabel: "Peter Meijer", start: 2005},
+      %{dob: 1971, end: 2006, genderLabel: "male", memberLabel: "Raymond Knops", start: 2005},
+      %{dob: 1976, end: 2012, genderLabel: "male", memberLabel: "Ewout Irrgang", start: 2005},
+      %{dob: 1955, end: 2006, genderLabel: "male", memberLabel: "Janmarc Lenards", start: 2005},
+      %{dob: 1960, end: 2006, genderLabel: "male", memberLabel: "Anton van Schijndel", start: 2005},
+      %{dob: 1966, end: 2006, genderLabel: "male", memberLabel: "Ed van der Sande", start: 2005},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Paul Jungbluth", start: 2005},
+      %{dob: 1948, end: 2006, genderLabel: "male", memberLabel: "Hilbrand Nawijn", start: 2005},
+      %{dob: 1961, end: 2006, genderLabel: "female", memberLabel: "Annette Nijs", start: 2005},
+      %{dob: 1960, end: 2006, genderLabel: "female", memberLabel: "Nevin Özütok", start: 2005},
+      %{dob: 1955, end: 2010, genderLabel: "female", memberLabel: "Lia Roefs", start: 2004},
+      %{dob: 1968, end: 2012, genderLabel: "female", memberLabel: "Fatma Koşer Kaya", start: 2004},
+      %{dob: 1963, end: 2006, genderLabel: "male", memberLabel: "Geert Wilders", start: 2004},
+      %{dob: 1966, end: 2006, genderLabel: "female", memberLabel: "Corien Jonker", start: 2004},
+      %{dob: 1977, end: 2006, genderLabel: "female", memberLabel: "Eske van Egerschot", start: 2004},
+      %{dob: 1972, end: 2009, genderLabel: "female", memberLabel: "Naïma Azough", start: 2004},
+      %{dob: 1948, end: 2006, genderLabel: "male", memberLabel: "Ali Lazrak", start: 2004},
+      %{dob: 1953, end: 2006, genderLabel: "female", memberLabel: "Jelleke Veenendaal", start: 2003},
+      %{dob: 1972, end: 2014, genderLabel: "male", memberLabel: "Eddy van Hijum", start: 2003},
+      %{
+        dob: 1954,
+        end: 2011,
+        genderLabel: "female",
+        memberLabel: "Ineke Dezentjé Hamming-Bluemink",
+        start: 2003
+      },
+      %{dob: 1967, end: 2010, genderLabel: "male", memberLabel: "Frans Weekers", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "male", memberLabel: "Zsolt Szabó", start: 2003},
+      %{dob: 1958, end: 2006, genderLabel: "male", memberLabel: "Theo Brinkel", start: 2003},
+      %{dob: 1966, end: 2006, genderLabel: "male", memberLabel: "Arno Visser", start: 2003},
+      %{dob: 1964, end: 2010, genderLabel: "male", memberLabel: "Jan Jacob van Dijk", start: 2003},
+      %{dob: 1954, end: 2006, genderLabel: "female", memberLabel: "Margreeth Smilde", start: 2003},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Wim van Fessem", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "male", memberLabel: "Eric Balemans", ...},
+      %{dob: 1963, end: 2006, genderLabel: "male", ...},
+      %{dob: 1956, end: 2006, ...},
+      %{dob: 1974, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2005 => [
+      %{dob: 1955, end: 2010, genderLabel: "female", memberLabel: "Lia Roefs", start: 2004},
+      %{dob: 1968, end: 2012, genderLabel: "female", memberLabel: "Fatma Koşer Kaya", start: 2004},
+      %{dob: 1963, end: 2006, genderLabel: "male", memberLabel: "Geert Wilders", start: 2004},
+      %{dob: 1966, end: 2006, genderLabel: "female", memberLabel: "Corien Jonker", start: 2004},
+      %{dob: 1977, end: 2006, genderLabel: "female", memberLabel: "Eske van Egerschot", start: 2004},
+      %{dob: 1972, end: 2009, genderLabel: "female", memberLabel: "Naïma Azough", start: 2004},
+      %{dob: 1948, end: 2006, genderLabel: "male", memberLabel: "Ali Lazrak", start: 2004},
+      %{dob: 1953, end: 2006, genderLabel: "female", memberLabel: "Jelleke Veenendaal", start: 2003},
+      %{dob: 1972, end: 2014, genderLabel: "male", memberLabel: "Eddy van Hijum", start: 2003},
+      %{
+        dob: 1954,
+        end: 2011,
+        genderLabel: "female",
+        memberLabel: "Ineke Dezentjé Hamming-Bluemink",
+        start: 2003
+      },
+      %{dob: 1967, end: 2010, genderLabel: "male", memberLabel: "Frans Weekers", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "male", memberLabel: "Zsolt Szabó", start: 2003},
+      %{dob: 1958, end: 2006, genderLabel: "male", memberLabel: "Theo Brinkel", start: 2003},
+      %{dob: 1966, end: 2006, genderLabel: "male", memberLabel: "Arno Visser", start: 2003},
+      %{dob: 1964, end: 2010, genderLabel: "male", memberLabel: "Jan Jacob van Dijk", start: 2003},
+      %{dob: 1954, end: 2006, genderLabel: "female", memberLabel: "Margreeth Smilde", start: 2003},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Wim van Fessem", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "male", memberLabel: "Eric Balemans", start: 2003},
+      %{dob: 1963, end: 2006, genderLabel: "male", memberLabel: "Nihat Eski", start: 2003},
+      %{dob: 1956, end: 2006, genderLabel: "male", memberLabel: "Ruud Luchtenveld", start: 2003},
+      %{dob: 1974, end: 2010, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2003},
+      %{dob: 1955, end: 2006, genderLabel: "female", memberLabel: "Ursie Lambrechts", start: 2003},
+      %{dob: 1964, end: 2010, genderLabel: "female", memberLabel: "Edith Schippers", start: 2003},
+      %{
+        dob: 1952,
+        end: 2012,
+        genderLabel: "female",
+        memberLabel: "Janneke Snijder-Hazelhoff",
+        start: 2003
+      },
+      %{dob: 1966, end: 2006, genderLabel: "female", memberLabel: "Myra Koomen", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "female", memberLabel: "Ine Aasted-Madsen", start: 2003},
+      %{dob: 1966, end: 2006, genderLabel: "female", memberLabel: "Lousewies van der Laan", ...},
+      %{dob: 1978, end: 2015, genderLabel: "male", ...},
+      %{dob: 1969, end: 2006, ...},
+      %{dob: 1974, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2004 => [
+      %{dob: 1953, end: 2006, genderLabel: "female", memberLabel: "Jelleke Veenendaal", start: 2003},
+      %{dob: 1972, end: 2014, genderLabel: "male", memberLabel: "Eddy van Hijum", start: 2003},
+      %{
+        dob: 1954,
+        end: 2011,
+        genderLabel: "female",
+        memberLabel: "Ineke Dezentjé Hamming-Bluemink",
+        start: 2003
+      },
+      %{dob: 1967, end: 2010, genderLabel: "male", memberLabel: "Frans Weekers", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "male", memberLabel: "Zsolt Szabó", start: 2003},
+      %{dob: 1958, end: 2006, genderLabel: "male", memberLabel: "Theo Brinkel", start: 2003},
+      %{dob: 1966, end: 2006, genderLabel: "male", memberLabel: "Arno Visser", start: 2003},
+      %{dob: 1964, end: 2010, genderLabel: "male", memberLabel: "Jan Jacob van Dijk", start: 2003},
+      %{dob: 1954, end: 2006, genderLabel: "female", memberLabel: "Margreeth Smilde", start: 2003},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Wim van Fessem", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "male", memberLabel: "Eric Balemans", start: 2003},
+      %{dob: 1963, end: 2006, genderLabel: "male", memberLabel: "Nihat Eski", start: 2003},
+      %{dob: 1956, end: 2006, genderLabel: "male", memberLabel: "Ruud Luchtenveld", start: 2003},
+      %{dob: 1974, end: 2010, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2003},
+      %{dob: 1955, end: 2006, genderLabel: "female", memberLabel: "Ursie Lambrechts", start: 2003},
+      %{dob: 1964, end: 2010, genderLabel: "female", memberLabel: "Edith Schippers", start: 2003},
+      %{
+        dob: 1952,
+        end: 2012,
+        genderLabel: "female",
+        memberLabel: "Janneke Snijder-Hazelhoff",
+        start: 2003
+      },
+      %{dob: 1966, end: 2006, genderLabel: "female", memberLabel: "Myra Koomen", start: 2003},
+      %{dob: 1961, end: 2006, genderLabel: "female", memberLabel: "Ine Aasted-Madsen", start: 2003},
+      %{
+        dob: 1966,
+        end: 2006,
+        genderLabel: "female",
+        memberLabel: "Lousewies van der Laan",
+        start: 2003
+      },
+      %{dob: 1978, end: 2015, genderLabel: "male", memberLabel: "Martijn van Dam", start: 2003},
+      %{dob: 1969, end: 2006, genderLabel: "female", memberLabel: "Ayaan Hirsi Ali", start: 2003},
+      %{dob: 1974, end: 2006, genderLabel: "male", memberLabel: "Max Hermans", start: 2003},
+      %{dob: 1963, end: 2006, genderLabel: "female", memberLabel: "Hannie Stuurman", start: 2003},
+      %{dob: 1950, end: 2006, genderLabel: "male", memberLabel: "Jan Boelhouwer", start: 2003},
+      %{dob: 1953, end: 2006, genderLabel: "female", memberLabel: "Marjo van Dijken", ...},
+      %{dob: 1969, end: 2006, genderLabel: "male", ...},
+      %{dob: 1967, end: 2006, ...},
+      %{dob: 1971, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2003 => [
+      %{dob: 1966, end: 2012, genderLabel: "male", memberLabel: "Jeroen Dijsselbloem", start: 2002},
+      %{dob: 1961, end: 2015, genderLabel: "male", memberLabel: "Arie Slob", start: 2002},
+      %{dob: 1964, end: 2003, genderLabel: "male", memberLabel: "Harry Wijnschenk", start: 2002},
+      %{
+        dob: 1958,
+        end: 2006,
+        genderLabel: "female",
+        memberLabel: "Godelieve van Heteren",
+        start: 2002
+      },
+      %{dob: 1950, end: 2005, genderLabel: "male", memberLabel: "Jan Geluk", start: 2002},
+      %{dob: 1947, end: 2003, genderLabel: "male", memberLabel: "Cor Eberhard", start: 2002},
+      %{dob: 1958, end: 2003, genderLabel: "female", memberLabel: "Winny de Jong", start: 2002},
+      %{dob: 1948, end: 2003, genderLabel: "male", memberLabel: "Gerritjan van Oven", start: 2002},
+      %{dob: 1952, end: 2003, genderLabel: "male", memberLabel: "Theo van den Doel", start: 2002},
+      %{dob: 1964, end: 2012, genderLabel: "male", memberLabel: "Stef Blok", start: 2002},
+      %{dob: 1963, end: 2004, genderLabel: "male", memberLabel: "Geert Wilders", start: 2002},
+      %{dob: 1964, end: 2003, genderLabel: "male", memberLabel: "Jan Jacob van Dijk", start: 2002},
+      %{dob: 1954, end: 2003, genderLabel: "female", memberLabel: "Margreeth Smilde", start: 2002},
+      %{dob: 1951, end: 2012, genderLabel: "female", memberLabel: "Gerdi Verbeet", start: 2002},
+      %{dob: 1957, end: 2003, genderLabel: "female", memberLabel: "Nellie Verbugt", start: 2002},
+      %{dob: 1949, end: 2003, genderLabel: "male", memberLabel: "Wim van Fessem", start: 2002},
+      %{dob: 1964, end: 2006, genderLabel: "male", memberLabel: "Gert-Jan Oplaat", start: 2002},
+      %{
+        dob: 1949,
+        end: 2003,
+        genderLabel: "male",
+        memberLabel: "Jan Hendrik Klein Molekamp",
+        start: 2002
+      },
+      %{dob: 1941, end: 2003, genderLabel: "male", memberLabel: "Jan Dirk Blaauw", start: 2002},
+      %{dob: 1974, end: 2010, genderLabel: "male", memberLabel: "Maarten Haverkamp", start: 2002},
+      %{dob: 1963, end: 2006, genderLabel: "male", memberLabel: "Rendert Algra", start: 2002},
+      %{dob: 1963, end: 2003, genderLabel: "male", memberLabel: "Nihat Eski", start: 2002},
+      %{dob: 1956, end: 2003, genderLabel: "male", memberLabel: "Ruud Luchtenveld", start: 2002},
+      %{
+        dob: 1942,
+        end: 2003,
+        genderLabel: "male",
+        memberLabel: "Willem van der Velden",
+        start: 2002
+      },
+      %{dob: 1966, end: 2003, genderLabel: "female", memberLabel: "Myra Koomen", ...},
+      %{dob: 1943, end: 2010, genderLabel: "male", ...},
+      %{dob: 1965, end: 2003, ...},
+      %{dob: 1934, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2002 => [
+      %{dob: 1951, end: 2002, genderLabel: "female", memberLabel: "Gerdi Verbeet", start: 2001},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Jo Horn", start: 2001},
+      %{dob: 1946, end: 2010, genderLabel: "male", memberLabel: "Jan ten Hoopen", start: 2001},
+      %{dob: 1949, end: 2002, genderLabel: "male", memberLabel: "Tom Pitstra", start: 2001},
+      %{dob: 1963, end: 2012, genderLabel: "male", memberLabel: "Coşkun Çörüz", start: 2001},
+      %{dob: 1963, end: 2002, genderLabel: "male", memberLabel: "Ernst van Splunter", start: 2001},
+      %{dob: 1962, end: 2007, genderLabel: "male", memberLabel: "André Rouvoet", start: 2001},
+      %{dob: 1955, end: 2003, genderLabel: "male", memberLabel: "Leen van Dijke", start: 2001},
+      %{dob: 1961, end: 2002, genderLabel: "male", memberLabel: "Arie Slob", start: 2001},
+      %{
+        dob: 1949,
+        end: 2002,
+        genderLabel: "male",
+        memberLabel: "Eimert van Middelkoop",
+        start: 2001
+      },
+      %{dob: 1953, end: 2002, genderLabel: "male", memberLabel: "Dick Stellingwerf", start: 2001},
+      %{
+        dob: 1950,
+        end: 2010,
+        genderLabel: "female",
+        memberLabel: "Marleen de Pater-van der Meer",
+        start: 2001
+      },
+      %{dob: 1953, end: 2002, genderLabel: "male", memberLabel: "Eppo Bolhuis", start: 2001},
+      %{dob: 1960, end: 2002, genderLabel: "male", memberLabel: "Staf Depla", start: 2000},
+      %{dob: 1945, end: 2002, genderLabel: "female", memberLabel: "Hillie Molenaar", start: 2000},
+      %{dob: 1962, end: 2002, genderLabel: "male", memberLabel: "Ton de Swart", start: 2000},
+      %{dob: 1966, end: 2002, genderLabel: "male", memberLabel: "Jeroen Dijsselbloem", start: 2000},
+      %{
+        dob: 1952,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Janneke Snijder-Hazelhoff",
+        start: 1999
+      },
+      %{dob: 1960, end: 2002, genderLabel: "male", memberLabel: "Hans van Baalen", start: 1999},
+      %{dob: 1953, end: 2002, genderLabel: "male", memberLabel: "Rik Hindriks", start: 1999},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Aart Mosterd", start: 1998},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Willem Herrebrugh", start: 1998},
+      %{dob: 1963, end: 2002, genderLabel: "male", memberLabel: "Geert Wilders", start: 1998},
+      %{dob: 1954, end: 2002, genderLabel: "male", memberLabel: "Thijs Udo", ...},
+      %{dob: 1959, end: 2002, genderLabel: "male", ...},
+      %{dob: 1964, end: 2002, ...},
+      %{dob: 1947, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2001 => [
+      %{dob: 1960, end: 2002, genderLabel: "male", memberLabel: "Staf Depla", start: 2000},
+      %{dob: 1945, end: 2002, genderLabel: "female", memberLabel: "Hillie Molenaar", start: 2000},
+      %{dob: 1962, end: 2002, genderLabel: "male", memberLabel: "Ton de Swart", start: 2000},
+      %{dob: 1966, end: 2002, genderLabel: "male", memberLabel: "Jeroen Dijsselbloem", start: 2000},
+      %{
+        dob: 1952,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Janneke Snijder-Hazelhoff",
+        start: 1999
+      },
+      %{dob: 1960, end: 2002, genderLabel: "male", memberLabel: "Hans van Baalen", start: 1999},
+      %{dob: 1953, end: 2002, genderLabel: "male", memberLabel: "Rik Hindriks", start: 1999},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Aart Mosterd", start: 1998},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Willem Herrebrugh", start: 1998},
+      %{dob: 1963, end: 2002, genderLabel: "male", memberLabel: "Geert Wilders", start: 1998},
+      %{dob: 1954, end: 2002, genderLabel: "male", memberLabel: "Thijs Udo", start: 1998},
+      %{dob: 1959, end: 2002, genderLabel: "male", memberLabel: "Oussama Cherribi", start: 1998},
+      %{dob: 1964, end: 2002, genderLabel: "male", memberLabel: "Stef Blok", start: 1998},
+      %{
+        dob: 1947,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Tineke Witteveen-Hevinga",
+        start: 1998
+      },
+      %{dob: 1955, end: 2002, genderLabel: "male", memberLabel: "Otto Vos", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "female", memberLabel: "Els Meijer", start: 1998},
+      %{
+        dob: 1944,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Marijke Augusteijn-Esser",
+        start: 1998
+      },
+      %{dob: 1948, end: 2002, genderLabel: "male", memberLabel: "Arie Kuijper", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "male", memberLabel: "Harm Evert Waalkens", start: 1998},
+      %{dob: 1967, end: 2002, genderLabel: "female", memberLabel: "Stefanie van Vliet", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "female", memberLabel: "Nicky van 't Riet", start: 1998},
+      %{dob: 1961, end: 2002, genderLabel: "male", memberLabel: "Eric Balemans", start: 1998},
+      %{dob: 1952, end: 2002, genderLabel: "female", memberLabel: "Annet van der Hoek", ...},
+      %{dob: 1947, end: 2002, genderLabel: "male", ...},
+      %{dob: 1956, end: 2002, ...},
+      %{dob: 1946, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    2000 => [
+      %{
+        dob: 1952,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Janneke Snijder-Hazelhoff",
+        start: 1999
+      },
+      %{dob: 1960, end: 2002, genderLabel: "male", memberLabel: "Hans van Baalen", start: 1999},
+      %{dob: 1953, end: 2002, genderLabel: "male", memberLabel: "Rik Hindriks", start: 1999},
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Aart Mosterd", start: 1998},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Willem Herrebrugh", start: 1998},
+      %{dob: 1963, end: 2002, genderLabel: "male", memberLabel: "Geert Wilders", start: 1998},
+      %{dob: 1954, end: 2002, genderLabel: "male", memberLabel: "Thijs Udo", start: 1998},
+      %{dob: 1959, end: 2002, genderLabel: "male", memberLabel: "Oussama Cherribi", start: 1998},
+      %{dob: 1964, end: 2002, genderLabel: "male", memberLabel: "Stef Blok", start: 1998},
+      %{
+        dob: 1947,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Tineke Witteveen-Hevinga",
+        start: 1998
+      },
+      %{dob: 1955, end: 2002, genderLabel: "male", memberLabel: "Otto Vos", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "female", memberLabel: "Els Meijer", start: 1998},
+      %{
+        dob: 1944,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Marijke Augusteijn-Esser",
+        start: 1998
+      },
+      %{dob: 1948, end: 2002, genderLabel: "male", memberLabel: "Arie Kuijper", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "male", memberLabel: "Harm Evert Waalkens", start: 1998},
+      %{dob: 1967, end: 2002, genderLabel: "female", memberLabel: "Stefanie van Vliet", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "female", memberLabel: "Nicky van 't Riet", start: 1998},
+      %{dob: 1961, end: 2002, genderLabel: "male", memberLabel: "Eric Balemans", start: 1998},
+      %{dob: 1952, end: 2002, genderLabel: "female", memberLabel: "Annet van der Hoek", start: 1998},
+      %{dob: 1947, end: 2002, genderLabel: "male", memberLabel: "Jan van Walsem", start: 1998},
+      %{dob: 1956, end: 2002, genderLabel: "male", memberLabel: "Ruud Luchtenveld", start: 1998},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Thanasis Apostolou", ...},
+      %{dob: 1954, end: 2002, genderLabel: "male", ...},
+      %{dob: 1964, end: 2000, ...},
+      %{dob: 1942, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1999 => [
+      %{dob: 1949, end: 2006, genderLabel: "male", memberLabel: "Aart Mosterd", start: 1998},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Willem Herrebrugh", start: 1998},
+      %{dob: 1963, end: 2002, genderLabel: "male", memberLabel: "Geert Wilders", start: 1998},
+      %{dob: 1954, end: 2002, genderLabel: "male", memberLabel: "Thijs Udo", start: 1998},
+      %{dob: 1959, end: 2002, genderLabel: "male", memberLabel: "Oussama Cherribi", start: 1998},
+      %{dob: 1964, end: 2002, genderLabel: "male", memberLabel: "Stef Blok", start: 1998},
+      %{
+        dob: 1947,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Tineke Witteveen-Hevinga",
+        start: 1998
+      },
+      %{dob: 1955, end: 2002, genderLabel: "male", memberLabel: "Otto Vos", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "female", memberLabel: "Els Meijer", start: 1998},
+      %{
+        dob: 1944,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Marijke Augusteijn-Esser",
+        start: 1998
+      },
+      %{dob: 1948, end: 2002, genderLabel: "male", memberLabel: "Arie Kuijper", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "male", memberLabel: "Harm Evert Waalkens", start: 1998},
+      %{dob: 1967, end: 2002, genderLabel: "female", memberLabel: "Stefanie van Vliet", start: 1998},
+      %{dob: 1948, end: 2002, genderLabel: "female", memberLabel: "Nicky van 't Riet", start: 1998},
+      %{dob: 1961, end: 2002, genderLabel: "male", memberLabel: "Eric Balemans", start: 1998},
+      %{dob: 1952, end: 2002, genderLabel: "female", memberLabel: "Annet van der Hoek", start: 1998},
+      %{dob: 1947, end: 2002, genderLabel: "male", memberLabel: "Jan van Walsem", start: 1998},
+      %{dob: 1956, end: 2002, genderLabel: "male", memberLabel: "Ruud Luchtenveld", start: 1998},
+      %{dob: 1946, end: 2002, genderLabel: "male", memberLabel: "Thanasis Apostolou", start: 1998},
+      %{dob: 1954, end: 2002, genderLabel: "male", memberLabel: "Usman Santi", start: 1998},
+      %{dob: 1964, end: 2000, genderLabel: "male", memberLabel: "Philippe Brood", ...},
+      %{dob: 1942, end: 2002, genderLabel: "male", ...},
+      %{dob: 1947, end: 1999, ...},
+      %{dob: 1931, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1998 => [
+      %{dob: 1963, end: 1998, genderLabel: "male", memberLabel: "Wim Elsthout", start: 1997},
+      %{dob: 1946, end: 1998, genderLabel: "male", memberLabel: "Paul Wessels", start: 1997},
+      %{dob: 1960, end: 2002, genderLabel: "female", memberLabel: "Marja Wagenaar", start: 1997},
+      %{dob: 1958, end: 2007, genderLabel: "male", memberLabel: "Bert Koenders", start: 1997},
+      %{dob: 1953, end: 1998, genderLabel: "male", memberLabel: "Arie de Jong", start: 1997},
+      %{dob: 1939, end: 1998, genderLabel: "male", memberLabel: "Bob Heeringa", start: 1997},
+      %{dob: 1956, end: 1998, genderLabel: "male", memberLabel: "Ruud Luchtenveld", start: 1997},
+      %{
+        dob: 1940,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Marry Visser-van Doorn",
+        start: 1997
+      },
+      %{dob: 1954, end: 2002, genderLabel: "male", memberLabel: "Jaap-Jelle Feenstra", start: 1997},
+      %{dob: 1941, end: 2006, genderLabel: "male", memberLabel: "Henk de Haan", start: 1996},
+      %{dob: 1947, end: 2003, genderLabel: "male", memberLabel: "Theo Meijer", start: 1996},
+      %{dob: 1928, end: 1998, genderLabel: "male", memberLabel: "Ron Meyer", start: 1996},
+      %{dob: 1946, end: 1998, genderLabel: "male", memberLabel: "Jan ten Hoopen", start: 1995},
+      %{dob: 1944, end: 2002, genderLabel: "male", memberLabel: "Wim Passtoors", start: 1995},
+      %{dob: 1954, end: 1998, genderLabel: "male", memberLabel: "Hans Jeekel", start: 1995},
+      %{
+        dob: 1928,
+        end: 1998,
+        genderLabel: "female",
+        memberLabel: "Liesbeth Aiking-van Wageningen",
+        start: 1995
+      },
+      %{dob: 1947, end: 1998, genderLabel: "female", memberLabel: "Jet Nijpels", start: 1995},
+      %{dob: 1927, end: 1998, genderLabel: "male", memberLabel: "Cees van Wingerden", start: 1995},
+      %{dob: 1938, end: 1998, genderLabel: "male", memberLabel: "Will Verkerk", start: 1995},
+      %{dob: 1944, end: 2003, genderLabel: "female", memberLabel: "Anke van Blerck-Woerdman", ...},
+      %{dob: 1948, end: 1998, genderLabel: "male", ...},
+      %{dob: 1949, end: 1998, ...},
+      %{dob: 1964, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1997 => [
+      %{dob: 1941, end: 2006, genderLabel: "male", memberLabel: "Henk de Haan", start: 1996},
+      %{dob: 1947, end: 2003, genderLabel: "male", memberLabel: "Theo Meijer", start: 1996},
+      %{dob: 1928, end: 1998, genderLabel: "male", memberLabel: "Ron Meyer", start: 1996},
+      %{dob: 1946, end: 1998, genderLabel: "male", memberLabel: "Jan ten Hoopen", start: 1995},
+      %{dob: 1944, end: 2002, genderLabel: "male", memberLabel: "Wim Passtoors", start: 1995},
+      %{dob: 1954, end: 1998, genderLabel: "male", memberLabel: "Hans Jeekel", start: 1995},
+      %{
+        dob: 1928,
+        end: 1998,
+        genderLabel: "female",
+        memberLabel: "Liesbeth Aiking-van Wageningen",
+        start: 1995
+      },
+      %{dob: 1947, end: 1998, genderLabel: "female", memberLabel: "Jet Nijpels", start: 1995},
+      %{dob: 1927, end: 1998, genderLabel: "male", memberLabel: "Cees van Wingerden", start: 1995},
+      %{dob: 1938, end: 1998, genderLabel: "male", memberLabel: "Will Verkerk", start: 1995},
+      %{
+        dob: 1944,
+        end: 2003,
+        genderLabel: "female",
+        memberLabel: "Anke van Blerck-Woerdman",
+        start: 1995
+      },
+      %{dob: 1948, end: 1998, genderLabel: "male", memberLabel: "Cees Bremmer", start: 1995},
+      %{dob: 1949, end: 1998, genderLabel: "female", memberLabel: "Anneke Assen", start: 1995},
+      %{dob: 1964, end: 2002, genderLabel: "male", memberLabel: "Peter Rehwinkel", start: 1995},
+      %{dob: 1955, end: 2002, genderLabel: "male", memberLabel: "Gerrit Valk", start: 1995},
+      %{dob: 1928, end: 1998, genderLabel: "male", memberLabel: "Theo Hendriks", start: 1994},
+      %{
+        dob: 1947,
+        end: 1998,
+        genderLabel: "female",
+        memberLabel: "Tineke Witteveen-Hevinga",
+        start: 1994
+      },
+      %{dob: 1946, end: 2006, genderLabel: "male", memberLabel: "Pieter Hofstra", start: 1994},
+      %{dob: 1945, end: 2002, genderLabel: "female", memberLabel: "Willie Swildens-Rozendaal", ...},
+      %{dob: 1938, end: 1998, genderLabel: "male", ...},
+      %{dob: 1955, end: 1998, ...},
+      %{dob: 1940, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1996 => [
+      %{dob: 1946, end: 1998, genderLabel: "male", memberLabel: "Jan ten Hoopen", start: 1995},
+      %{dob: 1944, end: 2002, genderLabel: "male", memberLabel: "Wim Passtoors", start: 1995},
+      %{dob: 1954, end: 1998, genderLabel: "male", memberLabel: "Hans Jeekel", start: 1995},
+      %{dob: 1928, end: 1996, genderLabel: "male", memberLabel: "Leo Boogaard Sr.", start: 1995},
+      %{
+        dob: 1928,
+        end: 1998,
+        genderLabel: "female",
+        memberLabel: "Liesbeth Aiking-van Wageningen",
+        start: 1995
+      },
+      %{dob: 1947, end: 1998, genderLabel: "female", memberLabel: "Jet Nijpels", start: 1995},
+      %{dob: 1927, end: 1998, genderLabel: "male", memberLabel: "Cees van Wingerden", start: 1995},
+      %{dob: 1938, end: 1998, genderLabel: "male", memberLabel: "Will Verkerk", start: 1995},
+      %{
+        dob: 1944,
+        end: 2003,
+        genderLabel: "female",
+        memberLabel: "Anke van Blerck-Woerdman",
+        start: 1995
+      },
+      %{dob: 1948, end: 1998, genderLabel: "male", memberLabel: "Cees Bremmer", start: 1995},
+      %{dob: 1949, end: 1998, genderLabel: "female", memberLabel: "Anneke Assen", start: 1995},
+      %{dob: 1964, end: 2002, genderLabel: "male", memberLabel: "Peter Rehwinkel", start: 1995},
+      %{dob: 1955, end: 2002, genderLabel: "male", memberLabel: "Gerrit Valk", start: 1995},
+      %{dob: 1928, end: 1998, genderLabel: "male", memberLabel: "Theo Hendriks", start: 1994},
+      %{
+        dob: 1947,
+        end: 1998,
+        genderLabel: "female",
+        memberLabel: "Tineke Witteveen-Hevinga",
+        start: 1994
+      },
+      %{dob: 1946, end: 2006, genderLabel: "male", memberLabel: "Pieter Hofstra", start: 1994},
+      %{
+        dob: 1945,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Willie Swildens-Rozendaal",
+        start: 1994
+      },
+      %{dob: 1938, end: 1998, genderLabel: "male", memberLabel: "Jan-Willem van Waning", ...},
+      %{dob: 1955, end: 1998, genderLabel: "male", ...},
+      %{dob: 1940, end: 1998, ...},
+      %{dob: 1954, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1995 => [
+      %{dob: 1928, end: 1998, genderLabel: "male", memberLabel: "Theo Hendriks", start: 1994},
+      %{
+        dob: 1947,
+        end: 1998,
+        genderLabel: "female",
+        memberLabel: "Tineke Witteveen-Hevinga",
+        start: 1994
+      },
+      %{dob: 1946, end: 2006, genderLabel: "male", memberLabel: "Pieter Hofstra", start: 1994},
+      %{
+        dob: 1945,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Willie Swildens-Rozendaal",
+        start: 1994
+      },
+      %{
+        dob: 1938,
+        end: 1998,
+        genderLabel: "male",
+        memberLabel: "Jan-Willem van Waning",
+        start: 1994
+      },
+      %{dob: 1955, end: 1998, genderLabel: "male", memberLabel: "Otto Vos", start: 1994},
+      %{dob: 1940, end: 1998, genderLabel: "male", memberLabel: "Servaes Huys", start: 1994},
+      %{dob: 1954, end: 1998, genderLabel: "male", memberLabel: "Roger van Boxtel", start: 1994},
+      %{dob: 1952, end: 2002, genderLabel: "male", memberLabel: "Bert Middel", start: 1994},
+      %{dob: 1967, end: 1998, genderLabel: "female", memberLabel: "Stefanie van Vliet", start: 1994},
+      %{
+        dob: 1949,
+        end: 2002,
+        genderLabel: "male",
+        memberLabel: "Jan Hendrik Klein Molekamp",
+        start: 1994
+      },
+      %{dob: 1952, end: 2002, genderLabel: "male", memberLabel: "Theo van den Doel", start: 1994},
+      %{dob: 1946, end: 1998, genderLabel: "female", memberLabel: "Mieke Sterk", start: 1994},
+      %{dob: 1947, end: 1998, genderLabel: "male", memberLabel: "Jan van Walsem", start: 1994},
+      %{dob: 1954, end: 2001, genderLabel: "male", memberLabel: "Rob van Gijzel", start: 1994},
+      %{dob: 1954, end: 1997, genderLabel: "male", memberLabel: "Hamid Houda", start: 1994},
+      %{dob: 1950, end: 1998, genderLabel: "male", memberLabel: "Willem Keur", ...},
+      %{dob: 1945, end: 1998, genderLabel: "female", ...},
+      %{dob: 1967, end: 2000, ...},
+      %{dob: 1934, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1994 => [
+      %{dob: 1951, end: 1998, genderLabel: "male", memberLabel: "Johan Remkes", start: 1993},
+      %{
+        dob: 1936,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Ans Willemse-van der Ploeg",
+        start: 1993
+      },
+      %{dob: 1943, end: 1994, genderLabel: "female", memberLabel: "Marjet Ockels", start: 1993},
+      %{dob: 1955, end: 1994, genderLabel: "male", memberLabel: "Asje van Dijk", start: 1993},
+      %{dob: 1954, end: 1994, genderLabel: "male", memberLabel: "Bram van Ojik", start: 1993},
+      %{dob: 1957, end: 2002, genderLabel: "female", memberLabel: "Nellie Verbugt", start: 1993},
+      %{
+        dob: 1944,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Klaasje Eisses-Timmerman",
+        start: 1992
+      },
+      %{dob: 1951, end: 1994, genderLabel: "male", memberLabel: "Ram Ramlal", start: 1992},
+      %{
+        dob: 1936,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Minke van der Ploeg-Posthumus",
+        start: 1991
+      },
+      %{dob: 1947, end: 1998, genderLabel: "male", memberLabel: "Henk van Hoof", start: 1991},
+      %{dob: 1945, end: 1994, genderLabel: "male", memberLabel: "Ruud van Middelkoop", start: 1991},
+      %{dob: 1952, end: 2006, genderLabel: "male", memberLabel: "Peter van Heemst", start: 1991},
+      %{
+        dob: 1949,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Maria van der Hoeven",
+        start: 1991
+      },
+      %{dob: 1947, end: 1994, genderLabel: "female", memberLabel: "Sjoukje Akkerman", start: 1991},
+      %{dob: 1945, end: 1998, genderLabel: "male", memberLabel: "Jos van Rey", start: 1991},
+      %{dob: 1941, end: 1994, genderLabel: "male", memberLabel: "Jan de Graaf", ...},
+      %{dob: 1949, end: 1998, genderLabel: "female", ...},
+      %{dob: 1927, end: 1994, ...},
+      %{dob: 1944, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1993 => [
+      %{
+        dob: 1944,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Klaasje Eisses-Timmerman",
+        start: 1992
+      },
+      %{dob: 1951, end: 1994, genderLabel: "male", memberLabel: "Ram Ramlal", start: 1992},
+      %{
+        dob: 1936,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Minke van der Ploeg-Posthumus",
+        start: 1991
+      },
+      %{dob: 1947, end: 1998, genderLabel: "male", memberLabel: "Henk van Hoof", start: 1991},
+      %{dob: 1945, end: 1994, genderLabel: "male", memberLabel: "Ruud van Middelkoop", start: 1991},
+      %{dob: 1952, end: 2006, genderLabel: "male", memberLabel: "Peter van Heemst", start: 1991},
+      %{dob: 1929, end: 1993, genderLabel: "male", memberLabel: "Herman Lauxtermann", start: 1991},
+      %{
+        dob: 1949,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Maria van der Hoeven",
+        start: 1991
+      },
+      %{dob: 1947, end: 1994, genderLabel: "female", memberLabel: "Sjoukje Akkerman", start: 1991},
+      %{dob: 1943, end: 1993, genderLabel: "female", memberLabel: "Marjet Ockels", start: 1991},
+      %{dob: 1945, end: 1998, genderLabel: "male", memberLabel: "Jos van Rey", start: 1991},
+      %{dob: 1941, end: 1994, genderLabel: "male", memberLabel: "Jan de Graaf", start: 1990},
+      %{dob: 1949, end: 1998, genderLabel: "female", memberLabel: "Leoni Sipkes", start: 1990},
+      %{
+        dob: 1927,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Len Rempt-Halmmans de Jongh",
+        start: 1990
+      },
+      %{dob: 1944, end: 1994, genderLabel: "female", memberLabel: "Joke Kersten", ...},
+      %{dob: 1951, end: 2002, genderLabel: "male", ...},
+      %{dob: 1953, end: 1994, ...},
+      %{dob: 1941, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1992 => [
+      %{
+        dob: 1936,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Minke van der Ploeg-Posthumus",
+        start: 1991
+      },
+      %{dob: 1947, end: 1998, genderLabel: "male", memberLabel: "Henk van Hoof", start: 1991},
+      %{dob: 1945, end: 1994, genderLabel: "male", memberLabel: "Ruud van Middelkoop", start: 1991},
+      %{dob: 1952, end: 2006, genderLabel: "male", memberLabel: "Peter van Heemst", start: 1991},
+      %{dob: 1929, end: 1993, genderLabel: "male", memberLabel: "Herman Lauxtermann", start: 1991},
+      %{
+        dob: 1949,
+        end: 2002,
+        genderLabel: "female",
+        memberLabel: "Maria van der Hoeven",
+        start: 1991
+      },
+      %{dob: 1947, end: 1994, genderLabel: "female", memberLabel: "Sjoukje Akkerman", start: 1991},
+      %{dob: 1943, end: 1993, genderLabel: "female", memberLabel: "Marjet Ockels", start: 1991},
+      %{dob: 1945, end: 1998, genderLabel: "male", memberLabel: "Jos van Rey", start: 1991},
+      %{dob: 1941, end: 1994, genderLabel: "male", memberLabel: "Jan de Graaf", start: 1990},
+      %{dob: 1949, end: 1998, genderLabel: "female", memberLabel: "Leoni Sipkes", start: 1990},
+      %{
+        dob: 1927,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Len Rempt-Halmmans de Jongh",
+        start: 1990
+      },
+      %{dob: 1944, end: 1994, genderLabel: "female", memberLabel: "Joke Kersten", start: 1990},
+      %{dob: 1951, end: 2002, genderLabel: "male", memberLabel: "Gerd Leers", ...},
+      %{dob: 1953, end: 1994, genderLabel: "male", ...},
+      %{dob: 1941, end: 2002, ...},
+      %{dob: 1942, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1991 => [
+      %{dob: 1941, end: 1994, genderLabel: "male", memberLabel: "Jan de Graaf", start: 1990},
+      %{dob: 1949, end: 1998, genderLabel: "female", memberLabel: "Leoni Sipkes", start: 1990},
+      %{
+        dob: 1927,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Len Rempt-Halmmans de Jongh",
+        start: 1990
+      },
+      %{dob: 1944, end: 1994, genderLabel: "female", memberLabel: "Joke Kersten", start: 1990},
+      %{dob: 1951, end: 2002, genderLabel: "male", memberLabel: "Gerd Leers", start: 1990},
+      %{dob: 1953, end: 1994, genderLabel: "male", memberLabel: "Arie de Jong", start: 1990},
+      %{dob: 1941, end: 2002, genderLabel: "male", memberLabel: "Jan Dirk Blaauw", start: 1990},
+      %{dob: 1931, end: 1991, genderLabel: "male", memberLabel: "Piet de Visser", start: 1990},
+      %{dob: 1942, end: 1998, genderLabel: "female", memberLabel: "Margreet Kamp", start: 1990},
+      %{dob: 1947, end: 2002, genderLabel: "male", memberLabel: "Hans Hillen", start: 1990},
+      %{dob: 1935, end: 1994, genderLabel: "male", memberLabel: "Erik Jurgens", start: 1990},
+      %{dob: 1933, end: 1997, genderLabel: "male", memberLabel: "Broos van Erp", start: 1990},
+      %{dob: 1962, end: 2001, genderLabel: "female", memberLabel: "Ank Bijleveld", ...},
+      %{dob: 1945, end: 1994, genderLabel: "female", ...},
+      %{dob: 1942, end: 1994, ...},
+      %{dob: 1939, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1990 => [
+      %{dob: 1962, end: 2001, genderLabel: "female", memberLabel: "Ank Bijleveld", start: 1989},
+      %{dob: 1945, end: 1994, genderLabel: "female", memberLabel: "Mieke van der Burg", start: 1989},
+      %{dob: 1942, end: 1994, genderLabel: "male", memberLabel: "Ton de Kok", start: 1989},
+      %{dob: 1939, end: 1994, genderLabel: "female", memberLabel: "Mechtild de Jong", start: 1989},
+      %{dob: 1936, end: 1998, genderLabel: "female", memberLabel: "Nel Mulder-van Dam", start: 1989},
+      %{dob: 1952, end: 1994, genderLabel: "male", memberLabel: "Bert Middel", start: 1989},
+      %{
+        dob: 1943,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Yvonne Vriens-Auerbach",
+        start: 1989
+      },
+      %{dob: 1945, end: 1994, genderLabel: "male", memberLabel: "Klaas Tuinstra", start: 1989},
+      %{dob: 1933, end: 1994, genderLabel: "male", memberLabel: "Tom Vreugdenhil", start: 1989},
+      %{
+        dob: 1945,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Monique Quint-Maagdenberg",
+        start: 1989
+      },
+      %{dob: 1944, end: 2002, genderLabel: "male", memberLabel: "Martin Zijlstra", start: 1989},
+      %{dob: 1955, end: 1994, genderLabel: "male", memberLabel: "Gerrit Valk", ...},
+      %{dob: 1954, end: 1994, genderLabel: "male", ...},
+      %{dob: 1945, end: 1994, ...},
+      %{dob: 1952, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1989 => [
+      %{dob: 1943, end: 1998, genderLabel: "male", memberLabel: "René van der Linden", start: 1988},
+      %{dob: 1941, end: 1989, genderLabel: "male", memberLabel: "Jan Dirk Blaauw", start: 1988},
+      %{dob: 1950, end: 1994, genderLabel: "male", memberLabel: "Koos van der Vaart", start: 1988},
+      %{dob: 1942, end: 1989, genderLabel: "female", memberLabel: "Ada Baas-Jansen", start: 1988},
+      %{dob: 1941, end: 1994, genderLabel: "male", memberLabel: "Joop van den Berg", start: 1988},
+      %{dob: 1954, end: 1989, genderLabel: "male", memberLabel: "Jaap-Jelle Feenstra", start: 1988},
+      %{dob: 1958, end: 1998, genderLabel: "female", memberLabel: "Margo Vliegenthart", start: 1987},
+      %{dob: 1944, end: 1994, genderLabel: "female", memberLabel: "Tineke Netelenbos", start: 1987},
+      %{dob: 1949, end: 1989, genderLabel: "male", memberLabel: "José Hageman", start: 1987},
+      %{
+        dob: 1936,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Leni van Rijn-Vellekoop",
+        start: 1987
+      },
+      %{dob: 1929, end: 1989, genderLabel: "male", memberLabel: "Herman Lauxtermann", ...},
+      %{dob: 1949, end: 1994, genderLabel: "male", ...},
+      %{dob: 1931, end: 1989, ...},
+      %{dob: 1933, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1988 => [
+      %{dob: 1958, end: 1998, genderLabel: "female", memberLabel: "Margo Vliegenthart", start: 1987},
+      %{dob: 1944, end: 1994, genderLabel: "female", memberLabel: "Tineke Netelenbos", start: 1987},
+      %{dob: 1949, end: 1989, genderLabel: "male", memberLabel: "José Hageman", start: 1987},
+      %{
+        dob: 1936,
+        end: 1994,
+        genderLabel: "female",
+        memberLabel: "Leni van Rijn-Vellekoop",
+        start: 1987
+      },
+      %{dob: 1929, end: 1989, genderLabel: "male", memberLabel: "Herman Lauxtermann", start: 1987},
+      %{
+        dob: 1949,
+        end: 1994,
+        genderLabel: "male",
+        memberLabel: "Gerrit-Jan van Otterloo",
+        start: 1986
+      },
+      %{dob: 1931, end: 1989, genderLabel: "male", memberLabel: "Gerard van Muiden", start: 1986},
+      %{dob: 1933, end: 1994, genderLabel: "male", memberLabel: "Walter Paulis", start: 1986},
+      %{dob: 1942, end: 1989, genderLabel: "male", memberLabel: "Ton de Kok", start: 1986},
+      %{dob: 1944, end: 1990, genderLabel: "male", memberLabel: "Ad Nijhuis", ...},
+      %{dob: 1933, end: 1989, genderLabel: "male", ...},
+      %{dob: 1942, end: 1989, ...},
+      %{dob: 1944, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1987 => [
+      %{
+        dob: 1949,
+        end: 1994,
+        genderLabel: "male",
+        memberLabel: "Gerrit-Jan van Otterloo",
+        start: 1986
+      },
+      %{dob: 1931, end: 1989, genderLabel: "male", memberLabel: "Gerard van Muiden", start: 1986},
+      %{dob: 1933, end: 1994, genderLabel: "male", memberLabel: "Walter Paulis", start: 1986},
+      %{dob: 1942, end: 1989, genderLabel: "male", memberLabel: "Ton de Kok", start: 1986},
+      %{dob: 1944, end: 1990, genderLabel: "male", memberLabel: "Ad Nijhuis", start: 1986},
+      %{dob: 1933, end: 1989, genderLabel: "male", memberLabel: "Broos van Erp", start: 1986},
+      %{dob: 1942, end: 1989, genderLabel: "female", memberLabel: "Margreet Kamp", start: 1986},
+      %{dob: 1944, end: 1998, genderLabel: "male", memberLabel: "Ries Smits", start: 1986},
+      %{dob: 1944, end: 1988, genderLabel: "male", memberLabel: "Loek Duyn", ...},
+      %{dob: 1927, end: 1989, genderLabel: "female", ...},
+      %{dob: 1949, end: 2002, ...},
+      %{dob: 1928, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1986 => [
+      %{dob: 1946, end: 1986, genderLabel: "male", memberLabel: "Clemens Bosman", start: 1985},
+      %{dob: 1935, end: 1986, genderLabel: "male", memberLabel: "Stef Dijkman", start: 1985},
+      %{dob: 1932, end: 1986, genderLabel: "male", memberLabel: "Jan Nico Scholten", start: 1985},
+      %{dob: 1927, end: 1986, genderLabel: "male", memberLabel: "Jan Bruggeman", start: 1985},
+      %{
+        dob: 1945,
+        end: 1986,
+        genderLabel: "female",
+        memberLabel: "Minouche Janmaat-Abee",
+        start: 1985
+      },
+      %{dob: 1934, end: 1986, genderLabel: "male", memberLabel: "Hans Janmaat", start: 1984},
+      %{dob: 1947, end: 1994, genderLabel: "male", memberLabel: "Frans Leijnse", start: 1984},
+      %{dob: 1931, end: 1986, genderLabel: "male", memberLabel: "Gerard van Muiden", ...},
+      %{dob: 1948, end: 1994, genderLabel: "male", ...},
+      %{dob: 1943, end: 1998, ...},
+      %{dob: 1947, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1985 => [
+      %{dob: 1934, end: 1986, genderLabel: "male", memberLabel: "Hans Janmaat", start: 1984},
+      %{dob: 1947, end: 1994, genderLabel: "male", memberLabel: "Frans Leijnse", start: 1984},
+      %{dob: 1931, end: 1986, genderLabel: "male", memberLabel: "Gerard van Muiden", start: 1984},
+      %{dob: 1948, end: 1994, genderLabel: "male", memberLabel: "Willem Vermeend", start: 1984},
+      %{dob: 1943, end: 1998, genderLabel: "male", memberLabel: "Henk Vos", start: 1983},
+      %{dob: 1932, end: 1985, genderLabel: "male", memberLabel: "Jan Nico Scholten", start: 1983},
+      %{dob: 1947, end: 1986, genderLabel: "male", memberLabel: "Marius Ernsting", ...},
+      %{dob: 1942, end: 1994, genderLabel: "male", ...},
+      %{dob: 1943, end: 2004, ...},
+      %{dob: 1933, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1984 => [
+      %{dob: 1943, end: 1998, genderLabel: "male", memberLabel: "Henk Vos", start: 1983},
+      %{dob: 1932, end: 1985, genderLabel: "male", memberLabel: "Jan Nico Scholten", start: 1983},
+      %{dob: 1947, end: 1986, genderLabel: "male", memberLabel: "Marius Ernsting", start: 1983},
+      %{dob: 1942, end: 1994, genderLabel: "male", memberLabel: "Dick Tommel", start: 1983},
+      %{
+        dob: 1943,
+        end: 2004,
+        genderLabel: "female",
+        memberLabel: "Jeltje van Nieuwenhoven",
+        start: 1983
+      },
+      %{dob: 1933, end: 1986, genderLabel: "male", memberLabel: "Walter Paulis", ...},
+      %{dob: 1931, end: 1989, genderLabel: "male", ...},
+      %{dob: 1937, end: 1994, ...},
+      %{dob: 1942, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1983 => [
+      %{dob: 1941, end: 1986, genderLabel: "male", memberLabel: "Jaap Metz", start: 1982},
+      %{dob: 1944, end: 1985, genderLabel: "male", memberLabel: "Jan Buikema", start: 1982},
+      %{dob: 1923, end: 1986, genderLabel: "female", memberLabel: "Mieke Andela-Baur", start: 1982},
+      %{dob: 1935, end: 1994, genderLabel: "male", memberLabel: "Jan Nijland", start: 1982},
+      %{dob: 1929, end: 1986, genderLabel: "male", memberLabel: "Herman Lauxtermann", ...},
+      %{dob: 1944, end: 1986, genderLabel: "male", ...},
+      %{dob: 1924, end: 1984, ...},
+      %{dob: 1933, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1982 => [
+      %{dob: 1931, end: 1982, genderLabel: "male", memberLabel: "Gerard van Muiden", start: 1981},
+      %{dob: 1944, end: 1982, genderLabel: "male", memberLabel: "Jan Buikema", start: 1981},
+      %{dob: 1935, end: 1982, genderLabel: "male", memberLabel: "Jan Nijland", start: 1981},
+      %{dob: 1940, end: 1982, genderLabel: "male", memberLabel: "Joost van Iersel", ...},
+      %{dob: 1944, end: 1989, genderLabel: "female", ...},
+      %{dob: 1943, end: 1982, ...},
+      %{dob: 1949, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1981 => [
+      %{dob: 1933, end: 1981, genderLabel: "male", memberLabel: "Walter Paulis", start: 1980},
+      %{dob: 1936, end: 1994, genderLabel: "male", memberLabel: "Frits Niessen", start: 1980},
+      %{dob: 1918, end: 1981, genderLabel: "female", memberLabel: "Bets Borm-Luijkx", ...},
+      %{dob: 1922, end: 1981, genderLabel: "male", ...},
+      %{dob: 1944, end: 1981, ...},
+      %{dob: 1945, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1980 => [
+      %{dob: 1945, end: 1981, genderLabel: "male", memberLabel: "Vincent van der Burg", start: 1979},
+      %{
+        dob: 1927,
+        end: 1981,
+        genderLabel: "female",
+        memberLabel: "Len Rempt-Halmmans de Jongh",
+        ...
+      },
+      %{dob: 1928, end: 1986, genderLabel: "male", ...},
+      %{dob: 1928, end: 1981, ...},
+      %{dob: 1944, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1979 => [
+      %{dob: 1938, end: 1989, genderLabel: "male", memberLabel: "Bert de Vries", ...},
+      %{dob: 1929, end: 1981, genderLabel: "female", ...},
+      %{dob: 1923, end: 1981, ...},
+      %{dob: 1934, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{
+    1978 => [
+      %{dob: 1931, end: 1993, genderLabel: "male", ...},
+      %{dob: 1917, end: 1982, ...},
+      %{dob: 1943, ...},
+      %{...},
+      ...
+    ]
+  },
+  %{1977 => [%{dob: 1947, end: 1981, ...}, %{dob: 1936, ...}, %{...}, ...]},
+  %{1976 => [%{dob: 1916, ...}, %{...}, ...]},
+  %{1975 => [%{...}, ...]},
+  %{1974 => [...]},
+  %{...},
+  ...
+]
+```
+
+```elixir
+genders_per_year =
+  members_per_year
+  |> Enum.map(fn [y, members] ->
+    [
+      y,
+      members |> Enum.map(fn m -> m[:genderLabel] end)
+    ]
+  end)
+```
+
+```elixir
+list =
+  genders_per_year
+  |> Enum.map(fn [y, genders] -> [y, length(genders), genders |> Enum.count(&(&1 == "male"))] end)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[
+  [2022, 151, 90],
+  [2021, 150, 103],
+  [2020, 151, 101],
+  [2019, 151, 104],
+  [2018, 151, 98],
+  [2017, 151, 94],
+  [2016, 151, 94],
+  [2015, 151, 95],
+  [2014, 150, 92],
+  [2013, 151, 93],
+  [2012, 149, 89],
+  [2011, 150, 90],
+  [2010, 150, 87],
+  [2009, 150, 88],
+  [2008, 150, 91],
+  [2007, 151, 96],
+  [2006, 152, 93],
+  [2005, 151, 91],
+  [2004, 151, 94],
+  [2003, 150, 102],
+  [2002, 150, 99],
+  [2001, 150, 96],
+  [2000, 150, 96],
+  [1999, 150, 96],
+  [1998, 150, 103],
+  [1997, 150, 103],
+  [1996, 150, 103],
+  [1995, 150, 103],
+  [1994, 150, 109],
+  [1993, 150, 109],
+  [1992, 150, 110],
+  [1991, 150, 113],
+  [1990, 150, 114],
+  [1989, 149, 121],
+  [1988, 148, 120],
+  [1987, 149, 121],
+  [1986, 147, 119],
+  [1985, 147, 120],
+  [1984, 147, 120],
+  [1983, 147, 120],
+  [1982, 147, 121],
+  [1981, 149, 125],
+  [1980, 149, 126],
+  [1979, 148, 128],
+  [1978, 141, 121],
+  [1977, 150, 130],
+  [1976, 150, 131],
+  [1975, 150, ...],
+  [1974, ...],
+  [...],
+  ...
+]
+```
+
+<!-- livebook:{"attrs":{"chart_title":null,"height":null,"layers":[{"chart_type":"point","color_field":null,"color_field_aggregate":null,"color_field_type":null,"data_variable":"members","x_field":"dob","x_field_aggregate":null,"x_field_type":"quantitative","y_field":"end","y_field_aggregate":null,"y_field_type":"quantitative"}],"vl_alias":"Elixir.VegaLite","width":null},"kind":"Elixir.KinoVegaLite.ChartCell","livebook_object":"smart_cell"} -->
+
+```elixir
+VegaLite.new()
+|> VegaLite.data_from_values(members, only: ["dob", "end"])
+|> VegaLite.mark(:point)
+|> VegaLite.encode_field(:x, "dob", type: :quantitative)
+|> VegaLite.encode_field(:y, "end", type: :quantitative)
+```
