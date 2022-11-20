@@ -6,11 +6,43 @@
 Mix.install([
   {:vega_lite, "~> 0.1.4"},
   {:kino_vega_lite, "~> 0.1.1"},
-  {:jason, "~> 1.4"},
-  {:timex, "~> 3.7.9"}
+  {:jason, "~> 1.4"}
 ])
 
 alias VegaLite, as: Vl
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+Resolving Hex dependencies...
+Dependency resolution completed:
+New:
+  jason 1.4.0
+  kino 0.7.0
+  kino_vega_lite 0.1.6
+  table 0.1.2
+  vega_lite 0.1.6
+* Getting vega_lite (Hex package)
+* Getting kino_vega_lite (Hex package)
+* Getting jason (Hex package)
+* Getting kino (Hex package)
+* Getting table (Hex package)
+==> table
+Compiling 5 files (.ex)
+Generated table app
+==> vega_lite
+Compiling 5 files (.ex)
+Generated vega_lite app
+==> kino
+Compiling 36 files (.ex)
+Generated kino app
+==> kino_vega_lite
+Compiling 4 files (.ex)
+Generated kino_vega_lite app
+==> jason
+Compiling 10 files (.ex)
+Generated jason app
 ```
 
 <!-- livebook:{"output":true} -->
@@ -7398,7 +7430,7 @@ averages_per_year =
 ]
 ```
 
-<!-- livebook:{"attrs":{"chart_title":"Average age of parliament","height":400,"layers":[{"chart_type":"line","color_field":null,"color_field_aggregate":null,"color_field_type":null,"data_variable":"averages_per_year","x_field":"year","x_field_aggregate":null,"x_field_type":"quantitative","y_field":"age","y_field_aggregate":null,"y_field_type":"quantitative"}],"vl_alias":"Elixir.Vl","width":1400},"kind":"Elixir.KinoVegaLite.ChartCell","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":{"chart_title":"Average age of parliament","height":400,"layers":[{"chart_type":"line","color_field":null,"color_field_aggregate":null,"color_field_bin":false,"color_field_scale_scheme":null,"color_field_type":null,"data_variable":"averages_per_year","x_field":"year","x_field_aggregate":null,"x_field_bin":false,"x_field_scale_type":null,"x_field_type":"quantitative","y_field":"age","y_field_aggregate":null,"y_field_bin":false,"y_field_scale_type":null,"y_field_type":"quantitative"}],"vl_alias":"Elixir.Vl","width":1400},"kind":"Elixir.KinoVegaLite.ChartCell","livebook_object":"smart_cell"} -->
 
 ```elixir
 Vl.new(width: 1400, height: 400, title: "Average age of parliament")
@@ -7411,5 +7443,5 @@ Vl.new(width: 1400, height: 400, title: "Average age of parliament")
 <!-- livebook:{"output":true} -->
 
 ```vega-lite
-{"$schema":"https://vega.github.io/schema/vega-lite/v5.json","data":{"values":[{"age":45.691428571428574,"year":2022},{"age":46.76348547717842,"year":2021},{"age":47.8109756097561,"year":2020},{"age":46.55232558139535,"year":2019},{"age":45.83233532934132,"year":2018},{"age":46.50833333333333,"year":2017},{"age":46.8969696969697,"year":2016},{"age":45.855421686746986,"year":2015},{"age":44.92307692307692,"year":2014},{"age":44.355828220858896,"year":2013},{"age":44.92035398230089,"year":2012},{"age":44.98136645962733,"year":2011},{"age":46.14718614718615,"year":2010},{"age":46.675,"year":2009},{"age":45.646341463414636,"year":2008},{"age":45.482142857142854,"year":2007},{"age":46.25847457627118,"year":2006},{"age":46.316770186335404,"year":2005},{"age":45.51898734177215,"year":2004},{"age":46.35813953488372,"year":2003},{"age":48.1412213740458,"year":2002},{"age":48.30487804878049,"year":2001},{"age":47.23376623376623,"year":2000},{"age":46.59477124183007,"year":1999},{"age":48.52521008403362,"year":1998},{"age":49.43396226415094,"year":1997},{"age":48.869281045751634,"year":1996},{"age":48.47878787878788,"year":1995},{"age":48.596638655462186,"year":1994},{"age":49.73076923076923,"year":1993},{"age":49.026315789473685,"year":1992},{"age":48.42767295597484,"year":1991},{"age":47.160493827160494,"year":1990},{"age":47.66183574879227,"year":1989},{"age":47.993506493506494,"year":1988},{"age":47.38961038961039,"year":1987},{"age":48.07111111111111,"year":1986},{"age":47.83552631578947,"year":1985},{"age":46.94701986754967,"year":1984},{"age":46.11538461538461,"year":1983},{"age":45.74647887323944,"year":1982},{"age":46.88532110091743,"year":1981},{"age":47.435064935064936,"year":1980},{"age":47.117283950617285,"year":1979},{"age":46.38414634146341,"year":1978},{"age":47.70866141732284,"year":1977},{"age":48.46835443037975,"year":1976},{"age":47.6,"year":1975},{"age":46.348387096774196,"year":1974},{"age":45.87777777777778,"year":1973},{"age":46.22631578947368,"year":1972},{"age":48.044444444444444,"year":1971},{"age":49.68789808917197,"year":1970},{"age":49.248366013071895,"year":1969},{"age":48.08024691358025,"year":1968},{"age":49.75,"year":1967},{"age":51.6,"year":1966},{"age":51.01863354037267,"year":1965},{"age":50.54304635761589,"year":1964},{"age":52.07281553398058,"year":1963},{"age":54.2171052631579,"year":1962},{"age":53.42567567567568,"year":1961},{"age":52.35616438356164,"year":1960},{"age":51.97191011235955,"year":1959},{"age":52.52317880794702,"year":1958},{"age":51.96527777777778,"year":1957},{"age":51.68862275449102,"year":1956},{"age":53.891304347826086,"year":1955},{"age":52.79120879120879,"year":1954},{"age":51.784946236559136,"year":1953},{"age":51.38392857142857,"year":1952},{"age":52.043956043956044,"year":1951},{"age":51.03370786516854,"year":1950},{"age":50.13483146067416,"year":1949},{"age":49.19834710743802,"year":1948},{"age":48.285714285714285,"year":1947},{"age":49.61963190184049,"year":1946},{"age":51.15584415584416,"year":1945},{"age":53.61538461538461,"year":1944},{"age":52.716981132075475,"year":1943},{"age":51.945454545454545,"year":1942},{"age":51.310344827586206,"year":1941},{"age":50.310344827586206,"year":1940},{"age":49.88333333333333,"year":1939},{"age":49.54385964912281,"year":1938},{"age":49.986111111111114,"year":1937},{"age":52.292682926829265,"year":1936},{"age":51.65853658536585,"year":1935},{"age":51.17948717948718,"year":1934},{"age":50.528301886792455,"year":1933},{"age":52.94736842105263,"year":1932},{"age":52.16216216216216,"year":1931},{"age":51.484848484848484,"year":1930},{"age":51.97727272727273,"year":1929},{"age":52.717948717948715,"year":1928},{"age":51.717948717948715,"year":1927},{"age":50.717948717948715,"year":1926},{"age":50.729166666666664,"year":1925},{"age":51.46875,"year":1924},{"age":50.827586206896555,"year":1923},{"age":51.51063829787234,"year":1922},{"age":51.7027027027027,"year":1921},{"age":50.96875,"year":1920},{"age":49.15151515151515,"year":1919},{"age":49.13636363636363,"year":1918},{"age":51.607142857142854,"year":1917},{"age":52.964285714285715,"year":1916},{"age":52.857142857142854,"year":1915},{"age":51.62068965517241,"year":1914},{"age":52.0,"year":1913},{"age":54.88461538461539,"year":1912},{"age":53.88461538461539,"year":1911},{"age":52.607142857142854,"year":1910},{"age":53.421052631578945,"year":1909},{"age":53.483870967741936,"year":1908},{"age":51.758620689655174,"year":1907},{"age":52.25925925925926,"year":1906},{"age":52.18421052631579,"year":1905},{"age":53.51724137931034,"year":1904},{"age":52.45161290322581,"year":1903},{"age":52.09375,"year":1902},{"age":53.432432432432435,"year":1901},{"age":53.23076923076923,"year":1900},{"age":52.23076923076923,"year":1899},{"age":51.23076923076923,"year":1898},{"age":51.172413793103445,"year":1897},{"age":51.7,"year":1896},{"age":50.7,"year":1895},{"age":50.37837837837838,"year":1894},{"age":50.10526315789474,"year":1893},{"age":49.10526315789474,"year":1892},{"age":48.333333333333336,"year":1891},{"age":48.10526315789474,"year":1890},{"age":47.5,"year":1889},{"age":48.8,"year":1888},{"age":50.38095238095238,"year":1887},{"age":48.95454545454545,"year":1886},{"age":47.642857142857146,"year":1885},{"age":48.827586206896555,"year":1884},{"age":50.875,"year":1883},{"age":49.294117647058826,"year":1882},{"age":49.375,"year":1881},{"age":49.44444444444444,"year":1880},{"age":51.05,"year":1879},{"age":50.85,"year":1878},{"age":50.142857142857146,"year":1877},{"age":51.80952380952381,"year":1876},{"age":50.869565217391305,"year":1875},{"age":51.0,"year":1874},{"age":51.45454545454545,"year":1873},{"age":50.22222222222222,"year":1872},{"age":49.95652173913044,"year":1871},{"age":48.45,"year":1870},{"age":47.72727272727273,"year":1869},{"age":47.93939393939394,"year":1868},{"age":48.0,"year":1867},{"age":48.32432432432432,"year":1866},{"age":50.611111111111114,"year":1865},{"age":51.142857142857146,"year":1864},{"age":49.666666666666664,"year":1863},{"age":52.09090909090909,"year":1862},{"age":51.89473684210526,"year":1861},{"age":51.958333333333336,"year":1860},{"age":52.22727272727273,"year":1859},{"age":52.54545454545455,"year":1858},{"age":52.04761904761905,"year":1857},{"age":51.69565217391305,"year":1856},{"age":50.333333333333336,"year":1855},{"age":49.8,"year":1854},{"age":48.57142857142857,"year":1853},{"age":48.31818181818182,"year":1852},{"age":47.44444444444444,"year":1851},{"age":46.142857142857146,"year":1850}]},"encoding":{"x":{"field":"year","type":"quantitative"},"y":{"field":"age","type":"quantitative"}},"height":400,"mark":"line","title":"Average age of parliament","width":1400}
+null
 ```
