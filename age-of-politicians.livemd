@@ -387,13 +387,12 @@ members =
 members =
   members
   |> Enum.map(fn m ->
-    Map.new(%{
-      :memberLabel => m["memberLabel"],
-      :start => m["start"] |> String.slice(0..3) |> String.to_integer(),
-      :end => (m["end"] || "2022") |> String.slice(0..3) |> String.to_integer(),
-      :dob => m["dob"] |> String.slice(0..3) |> String.to_integer(),
-      :genderLabel => m["genderLabel"]
-    })
+    %{
+      memberLabel: m["memberLabel"],
+      dob: m["dob"] |> String.slice(0..3) |> String.to_integer(),
+      end: (m["end"] || "2022") |> String.slice(0..3) |> String.to_integer(),
+      start: m["start"] |> String.slice(0..3) |> String.to_integer()
+    }
   end)
 ```
 
@@ -401,71 +400,53 @@ members =
 
 ```
 [
-  %{dob: 1972, end: 2022, genderLabel: "female", memberLabel: "Simone Richardson", start: 2022},
-  %{dob: 1987, end: 2022, genderLabel: "female", memberLabel: "Anne Kuik", start: 2022},
-  %{dob: 1957, end: 2022, genderLabel: "male", memberLabel: "Ralf Dekker", start: 2022},
-  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Chris Simons", start: 2022},
-  %{dob: 1973, end: 2022, genderLabel: "male", memberLabel: "Martijn Grevink", start: 2022},
-  %{dob: 1991, end: 2022, genderLabel: "female", memberLabel: "Nicki Pouw-Verweij", start: 2022},
-  %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Mohammed Mohandis", start: 2022},
-  %{dob: 1969, end: 2022, genderLabel: "male", memberLabel: "Evert Jan Slootweg", start: 2022},
-  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Chris Simons", start: 2022},
-  %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Nilüfer Gündoğan", start: 2022},
-  %{dob: 1979, end: 2022, genderLabel: "male", memberLabel: "Maarten Goudzwaard", start: 2022},
-  %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Nilüfer Gündoğan", start: 2022},
-  %{dob: 1977, end: 2022, genderLabel: "female", memberLabel: "Nilüfer Gündoğan", start: 2022},
-  %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Songül Mutluer", start: 2022},
-  %{dob: 1991, end: 2022, genderLabel: "male", memberLabel: "Rens Raemakers", start: 2022},
-  %{dob: 1981, end: 2022, genderLabel: "female", memberLabel: "Hind Dekker-Abdulaziz", start: 2022},
-  %{dob: 1987, end: 2022, genderLabel: "male", memberLabel: "Sjoerd Warmerdam", start: 2022},
-  %{dob: 1973, end: 2022, genderLabel: "male", memberLabel: "Steven Van Weyenberg", start: 2022},
-  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Harry Bevers", start: 2022},
-  %{dob: 1984, end: 2022, genderLabel: "female", memberLabel: "Stieneke van der Graaf", start: 2022},
-  %{dob: 1972, end: 2022, genderLabel: "male", memberLabel: "Erik Haverkort", start: 2022},
-  %{dob: 1978, end: 2022, genderLabel: "male", memberLabel: "Hawre Rahimi", start: 2022},
-  %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Ruud Verkuijlen", start: 2022},
-  %{dob: 1982, end: 2022, genderLabel: "male", memberLabel: "Henri Bontenbal", start: 2022},
-  %{dob: 1980, end: 2022, genderLabel: "male", memberLabel: "Harry van der Molen", start: 2021},
-  %{dob: 1976, end: 2022, genderLabel: "female", memberLabel: "Suzanne Kröger", start: 2021},
-  %{dob: 1979, end: 2022, genderLabel: "female", memberLabel: "Fonda Sahla", start: 2021},
-  %{dob: 1982, end: 2021, genderLabel: "male", memberLabel: "Henri Bontenbal", start: 2021},
-  %{
-    dob: 1958,
-    end: 2022,
-    genderLabel: "female",
-    memberLabel: "Joba van den Berg-Jansen",
-    start: 2021
-  },
-  %{dob: 1974, end: 2022, genderLabel: "male", memberLabel: "Pieter Omtzigt", start: 2021},
-  %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Ruud Verkuijlen", start: 2021},
-  %{dob: 1975, end: 2022, genderLabel: "female", memberLabel: "Anne-Marijke Podt", start: 2021},
-  %{dob: 1970, end: 2022, genderLabel: "male", memberLabel: "Bart Smals", start: 2021},
-  %{dob: 1979, end: 2022, genderLabel: "male", memberLabel: "Mark Strolenberg", start: 2021},
-  %{dob: 1980, end: 2021, genderLabel: "male", memberLabel: "Harry van der Molen", start: 2021},
-  %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Jan Klink", start: 2021},
-  %{dob: 1982, end: 2021, genderLabel: "male", memberLabel: "Henri Bontenbal", start: 2021},
-  %{dob: 1967, end: 2022, genderLabel: "male", memberLabel: "Wybren van Haga", start: 2021},
-  %{dob: 1965, end: 2022, genderLabel: "male", memberLabel: "Olaf Ephraim", start: 2021},
-  %{dob: 1960, end: 2022, genderLabel: "male", memberLabel: "Hans Smolders", start: 2021},
-  %{dob: 1967, end: 2022, genderLabel: "female", memberLabel: "Liane den Haan", start: 2021},
-  %{
-    dob: 1958,
-    end: 2021,
-    genderLabel: "female",
-    memberLabel: "Joba van den Berg-Jansen",
-    start: 2021
-  },
-  %{
-    dob: 1971,
-    end: 2022,
-    genderLabel: "female",
-    memberLabel: "Marijke van Beukering-Huijbregts",
-    start: 2021
-  },
-  %{dob: 1978, end: 2022, genderLabel: "female", memberLabel: "Wieke Paulusma", start: 2021},
-  %{dob: 1968, end: 2022, genderLabel: "male", memberLabel: "Tjeerd de Groot", start: 2021},
-  %{dob: 1968, end: 2021, genderLabel: "female", memberLabel: "Mona Keijzer", ...},
-  %{dob: 1977, end: 2022, genderLabel: "female", ...},
+  %{dob: 1972, end: 2022, memberLabel: "Simone Richardson", start: 2022},
+  %{dob: 1987, end: 2022, memberLabel: "Anne Kuik", start: 2022},
+  %{dob: 1957, end: 2022, memberLabel: "Ralf Dekker", start: 2022},
+  %{dob: 1965, end: 2022, memberLabel: "Chris Simons", start: 2022},
+  %{dob: 1973, end: 2022, memberLabel: "Martijn Grevink", start: 2022},
+  %{dob: 1991, end: 2022, memberLabel: "Nicki Pouw-Verweij", start: 2022},
+  %{dob: 1985, end: 2022, memberLabel: "Mohammed Mohandis", start: 2022},
+  %{dob: 1969, end: 2022, memberLabel: "Evert Jan Slootweg", start: 2022},
+  %{dob: 1965, end: 2022, memberLabel: "Chris Simons", start: 2022},
+  %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", start: 2022},
+  %{dob: 1979, end: 2022, memberLabel: "Maarten Goudzwaard", start: 2022},
+  %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", start: 2022},
+  %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", start: 2022},
+  %{dob: 1979, end: 2022, memberLabel: "Songül Mutluer", start: 2022},
+  %{dob: 1991, end: 2022, memberLabel: "Rens Raemakers", start: 2022},
+  %{dob: 1981, end: 2022, memberLabel: "Hind Dekker-Abdulaziz", start: 2022},
+  %{dob: 1987, end: 2022, memberLabel: "Sjoerd Warmerdam", start: 2022},
+  %{dob: 1973, end: 2022, memberLabel: "Steven Van Weyenberg", start: 2022},
+  %{dob: 1965, end: 2022, memberLabel: "Harry Bevers", start: 2022},
+  %{dob: 1984, end: 2022, memberLabel: "Stieneke van der Graaf", start: 2022},
+  %{dob: 1972, end: 2022, memberLabel: "Erik Haverkort", start: 2022},
+  %{dob: 1978, end: 2022, memberLabel: "Hawre Rahimi", start: 2022},
+  %{dob: 1960, end: 2022, memberLabel: "Ruud Verkuijlen", start: 2022},
+  %{dob: 1982, end: 2022, memberLabel: "Henri Bontenbal", start: 2022},
+  %{dob: 1980, end: 2022, memberLabel: "Harry van der Molen", start: 2021},
+  %{dob: 1976, end: 2022, memberLabel: "Suzanne Kröger", start: 2021},
+  %{dob: 1979, end: 2022, memberLabel: "Fonda Sahla", start: 2021},
+  %{dob: 1982, end: 2021, memberLabel: "Henri Bontenbal", start: 2021},
+  %{dob: 1958, end: 2022, memberLabel: "Joba van den Berg-Jansen", start: 2021},
+  %{dob: 1974, end: 2022, memberLabel: "Pieter Omtzigt", start: 2021},
+  %{dob: 1960, end: 2022, memberLabel: "Ruud Verkuijlen", start: 2021},
+  %{dob: 1975, end: 2022, memberLabel: "Anne-Marijke Podt", start: 2021},
+  %{dob: 1970, end: 2022, memberLabel: "Bart Smals", start: 2021},
+  %{dob: 1979, end: 2022, memberLabel: "Mark Strolenberg", start: 2021},
+  %{dob: 1980, end: 2021, memberLabel: "Harry van der Molen", start: 2021},
+  %{dob: 1985, end: 2022, memberLabel: "Jan Klink", start: 2021},
+  %{dob: 1982, end: 2021, memberLabel: "Henri Bontenbal", start: 2021},
+  %{dob: 1967, end: 2022, memberLabel: "Wybren van Haga", start: 2021},
+  %{dob: 1965, end: 2022, memberLabel: "Olaf Ephraim", start: 2021},
+  %{dob: 1960, end: 2022, memberLabel: "Hans Smolders", start: 2021},
+  %{dob: 1967, end: 2022, memberLabel: "Liane den Haan", start: 2021},
+  %{dob: 1958, end: 2021, memberLabel: "Joba van den Berg-Jansen", start: 2021},
+  %{dob: 1971, end: 2022, memberLabel: "Marijke van Beukering-Huijbregts", start: 2021},
+  %{dob: 1978, end: 2022, memberLabel: "Wieke Paulusma", start: 2021},
+  %{dob: 1968, end: 2022, memberLabel: "Tjeerd de Groot", start: 2021},
+  %{dob: 1968, end: 2021, memberLabel: "Mona Keijzer", start: 2021},
+  %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", ...},
   %{dob: 1979, end: 2021, ...},
   %{dob: 1977, ...},
   %{...},
@@ -480,8 +461,7 @@ years_and_members =
   members
   |> Enum.map(fn member ->
     member.start..member.end
-    |> Enum.map(fn year -> [year, member] end)
-    |> Enum.map(fn [year, member] -> %{"year" => year, "member" => member} end)
+    |> Enum.map(fn year -> %{year: year, member: member} end)
   end)
   |> List.flatten()
 ```
@@ -490,442 +470,61 @@ years_and_members =
 
 ```
 [
+  %{member: %{dob: 1972, end: 2022, memberLabel: "Simone Richardson", start: 2022}, year: 2022},
+  %{member: %{dob: 1987, end: 2022, memberLabel: "Anne Kuik", start: 2022}, year: 2022},
+  %{member: %{dob: 1957, end: 2022, memberLabel: "Ralf Dekker", start: 2022}, year: 2022},
+  %{member: %{dob: 1965, end: 2022, memberLabel: "Chris Simons", start: 2022}, year: 2022},
+  %{member: %{dob: 1973, end: 2022, memberLabel: "Martijn Grevink", start: 2022}, year: 2022},
+  %{member: %{dob: 1991, end: 2022, memberLabel: "Nicki Pouw-Verweij", start: 2022}, year: 2022},
+  %{member: %{dob: 1985, end: 2022, memberLabel: "Mohammed Mohandis", start: 2022}, year: 2022},
+  %{member: %{dob: 1969, end: 2022, memberLabel: "Evert Jan Slootweg", start: 2022}, year: 2022},
+  %{member: %{dob: 1965, end: 2022, memberLabel: "Chris Simons", start: 2022}, year: 2022},
+  %{member: %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", start: 2022}, year: 2022},
+  %{member: %{dob: 1979, end: 2022, memberLabel: "Maarten Goudzwaard", start: 2022}, year: 2022},
+  %{member: %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", start: 2022}, year: 2022},
+  %{member: %{dob: 1977, end: 2022, memberLabel: "Nilüfer Gündoğan", start: 2022}, year: 2022},
+  %{member: %{dob: 1979, end: 2022, memberLabel: "Songül Mutluer", start: 2022}, year: 2022},
+  %{member: %{dob: 1991, end: 2022, memberLabel: "Rens Raemakers", start: 2022}, year: 2022},
+  %{member: %{dob: 1981, end: 2022, memberLabel: "Hind Dekker-Abdulaziz", start: 2022}, year: 2022},
+  %{member: %{dob: 1987, end: 2022, memberLabel: "Sjoerd Warmerdam", start: 2022}, year: 2022},
+  %{member: %{dob: 1973, end: 2022, memberLabel: "Steven Van Weyenberg", start: 2022}, year: 2022},
+  %{member: %{dob: 1965, end: 2022, memberLabel: "Harry Bevers", start: 2022}, year: 2022},
+  %{member: %{dob: 1984, end: 2022, memberLabel: "Stieneke van der Graaf", start: 2022}, year: 2022},
+  %{member: %{dob: 1972, end: 2022, memberLabel: "Erik Haverkort", start: 2022}, year: 2022},
+  %{member: %{dob: 1978, end: 2022, memberLabel: "Hawre Rahimi", start: 2022}, year: 2022},
+  %{member: %{dob: 1960, end: 2022, memberLabel: "Ruud Verkuijlen", start: 2022}, year: 2022},
+  %{member: %{dob: 1982, end: 2022, memberLabel: "Henri Bontenbal", start: 2022}, year: 2022},
+  %{member: %{dob: 1980, end: 2022, memberLabel: "Harry van der Molen", start: 2021}, year: 2021},
+  %{member: %{dob: 1980, end: 2022, memberLabel: "Harry van der Molen", start: 2021}, year: 2022},
+  %{member: %{dob: 1976, end: 2022, memberLabel: "Suzanne Kröger", start: 2021}, year: 2021},
+  %{member: %{dob: 1976, end: 2022, memberLabel: "Suzanne Kröger", start: 2021}, year: 2022},
+  %{member: %{dob: 1979, end: 2022, memberLabel: "Fonda Sahla", start: 2021}, year: 2021},
+  %{member: %{dob: 1979, end: 2022, memberLabel: "Fonda Sahla", start: 2021}, year: 2022},
+  %{member: %{dob: 1982, end: 2021, memberLabel: "Henri Bontenbal", start: 2021}, year: 2021},
   %{
-    "member" => %{
-      dob: 1972,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Simone Richardson",
-      start: 2022
-    },
-    "year" => 2022
+    member: %{dob: 1958, end: 2022, memberLabel: "Joba van den Berg-Jansen", start: 2021},
+    year: 2021
   },
   %{
-    "member" => %{
-      dob: 1987,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Anne Kuik",
-      start: 2022
-    },
-    "year" => 2022
+    member: %{dob: 1958, end: 2022, memberLabel: "Joba van den Berg-Jansen", start: 2021},
+    year: 2022
   },
-  %{
-    "member" => %{
-      dob: 1957,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Ralf Dekker",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1965,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Chris Simons",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1973,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Martijn Grevink",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1991,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Nicki Pouw-Verweij",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1985,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Mohammed Mohandis",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1969,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Evert Jan Slootweg",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1965,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Chris Simons",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1977,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Nilüfer Gündoğan",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1979,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Maarten Goudzwaard",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1977,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Nilüfer Gündoğan",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1977,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Nilüfer Gündoğan",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1979,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Songül Mutluer",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1991,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Rens Raemakers",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1981,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Hind Dekker-Abdulaziz",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1987,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Sjoerd Warmerdam",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1973,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Steven Van Weyenberg",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1965,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Harry Bevers",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1984,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Stieneke van der Graaf",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1972,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Erik Haverkort",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1978,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Hawre Rahimi",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1960,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Ruud Verkuijlen",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1982,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Henri Bontenbal",
-      start: 2022
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1980,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Harry van der Molen",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1980,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Harry van der Molen",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1976,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Suzanne Kröger",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1976,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Suzanne Kröger",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1979,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Fonda Sahla",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1979,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Fonda Sahla",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1982,
-      end: 2021,
-      genderLabel: "male",
-      memberLabel: "Henri Bontenbal",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1958,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Joba van den Berg-Jansen",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1958,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Joba van den Berg-Jansen",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1974,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Pieter Omtzigt",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1974,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Pieter Omtzigt",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1960,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Ruud Verkuijlen",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1960,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Ruud Verkuijlen",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1975,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Anne-Marijke Podt",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1975,
-      end: 2022,
-      genderLabel: "female",
-      memberLabel: "Anne-Marijke Podt",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{dob: 1970, end: 2022, genderLabel: "male", memberLabel: "Bart Smals", start: 2021},
-    "year" => 2021
-  },
-  %{
-    "member" => %{dob: 1970, end: 2022, genderLabel: "male", memberLabel: "Bart Smals", start: 2021},
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1979,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Mark Strolenberg",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{
-      dob: 1979,
-      end: 2022,
-      genderLabel: "male",
-      memberLabel: "Mark Strolenberg",
-      start: 2021
-    },
-    "year" => 2022
-  },
-  %{
-    "member" => %{
-      dob: 1980,
-      end: 2021,
-      genderLabel: "male",
-      memberLabel: "Harry van der Molen",
-      start: 2021
-    },
-    "year" => 2021
-  },
-  %{
-    "member" => %{dob: 1985, end: 2022, genderLabel: "male", memberLabel: "Jan Klink", ...},
-    "year" => 2021
-  },
-  %{"member" => %{dob: 1985, end: 2022, genderLabel: "male", ...}, "year" => 2022},
-  %{"member" => %{dob: 1982, end: 2021, ...}, "year" => 2021},
-  %{"member" => %{dob: 1967, ...}, "year" => 2021},
-  %{"member" => %{...}, ...},
+  %{member: %{dob: 1974, end: 2022, memberLabel: "Pieter Omtzigt", start: 2021}, year: 2021},
+  %{member: %{dob: 1974, end: 2022, memberLabel: "Pieter Omtzigt", start: 2021}, year: 2022},
+  %{member: %{dob: 1960, end: 2022, memberLabel: "Ruud Verkuijlen", start: 2021}, year: 2021},
+  %{member: %{dob: 1960, end: 2022, memberLabel: "Ruud Verkuijlen", start: 2021}, year: 2022},
+  %{member: %{dob: 1975, end: 2022, memberLabel: "Anne-Marijke Podt", start: 2021}, year: 2021},
+  %{member: %{dob: 1975, end: 2022, memberLabel: "Anne-Marijke Podt", start: 2021}, year: 2022},
+  %{member: %{dob: 1970, end: 2022, memberLabel: "Bart Smals", start: 2021}, year: 2021},
+  %{member: %{dob: 1970, end: 2022, memberLabel: "Bart Smals", start: 2021}, year: 2022},
+  %{member: %{dob: 1979, end: 2022, memberLabel: "Mark Strolenberg", start: 2021}, year: 2021},
+  %{member: %{dob: 1979, end: 2022, memberLabel: "Mark Strolenberg", start: 2021}, year: 2022},
+  %{member: %{dob: 1980, end: 2021, memberLabel: "Harry van der Molen", start: 2021}, year: 2021},
+  %{member: %{dob: 1985, end: 2022, memberLabel: "Jan Klink", start: 2021}, year: 2021},
+  %{member: %{dob: 1985, end: 2022, memberLabel: "Jan Klink", ...}, year: 2022},
+  %{member: %{dob: 1982, end: 2021, ...}, year: 2021},
+  %{member: %{dob: 1967, ...}, year: 2021},
+  %{member: %{...}, ...},
   %{...},
   ...
 ]
@@ -936,65 +535,63 @@ years_and_members =
 ```elixir
 data =
   years_and_members
-  |> Enum.map(fn %{"member" => member, "year" => year} ->
-    %{"year" => year, "age" => year - member.dob}
-  end)
-  |> Enum.filter(fn %{"age" => _age, "year" => year} -> year > 1850 end)
+  |> Enum.map(fn %{:member => member, :year => year} -> %{year: year, age: year - member.dob} end)
+  |> Enum.filter(fn %{:age => _, :year => year} -> year > 1850 end)
 ```
 
 <!-- livebook:{"output":true} -->
 
 ```
 [
-  %{"age" => 50, "year" => 2022},
-  %{"age" => 35, "year" => 2022},
-  %{"age" => 65, "year" => 2022},
-  %{"age" => 57, "year" => 2022},
-  %{"age" => 49, "year" => 2022},
-  %{"age" => 31, "year" => 2022},
-  %{"age" => 37, "year" => 2022},
-  %{"age" => 53, "year" => 2022},
-  %{"age" => 57, "year" => 2022},
-  %{"age" => 45, "year" => 2022},
-  %{"age" => 43, "year" => 2022},
-  %{"age" => 45, "year" => 2022},
-  %{"age" => 45, "year" => 2022},
-  %{"age" => 43, "year" => 2022},
-  %{"age" => 31, "year" => 2022},
-  %{"age" => 41, "year" => 2022},
-  %{"age" => 35, "year" => 2022},
-  %{"age" => 49, "year" => 2022},
-  %{"age" => 57, "year" => 2022},
-  %{"age" => 38, "year" => 2022},
-  %{"age" => 50, "year" => 2022},
-  %{"age" => 44, "year" => 2022},
-  %{"age" => 62, "year" => 2022},
-  %{"age" => 40, "year" => 2022},
-  %{"age" => 41, "year" => 2021},
-  %{"age" => 42, "year" => 2022},
-  %{"age" => 45, "year" => 2021},
-  %{"age" => 46, "year" => 2022},
-  %{"age" => 42, "year" => 2021},
-  %{"age" => 43, "year" => 2022},
-  %{"age" => 39, "year" => 2021},
-  %{"age" => 63, "year" => 2021},
-  %{"age" => 64, "year" => 2022},
-  %{"age" => 47, "year" => 2021},
-  %{"age" => 48, "year" => 2022},
-  %{"age" => 61, "year" => 2021},
-  %{"age" => 62, "year" => 2022},
-  %{"age" => 46, "year" => 2021},
-  %{"age" => 47, "year" => 2022},
-  %{"age" => 51, "year" => 2021},
-  %{"age" => 52, "year" => 2022},
-  %{"age" => 42, "year" => 2021},
-  %{"age" => 43, "year" => 2022},
-  %{"age" => 41, "year" => 2021},
-  %{"age" => 36, "year" => 2021},
-  %{"age" => 37, "year" => 2022},
-  %{"age" => 39, "year" => 2021},
-  %{"age" => 54, "year" => 2021},
-  %{"age" => 55, ...},
+  %{age: 50, year: 2022},
+  %{age: 35, year: 2022},
+  %{age: 65, year: 2022},
+  %{age: 57, year: 2022},
+  %{age: 49, year: 2022},
+  %{age: 31, year: 2022},
+  %{age: 37, year: 2022},
+  %{age: 53, year: 2022},
+  %{age: 57, year: 2022},
+  %{age: 45, year: 2022},
+  %{age: 43, year: 2022},
+  %{age: 45, year: 2022},
+  %{age: 45, year: 2022},
+  %{age: 43, year: 2022},
+  %{age: 31, year: 2022},
+  %{age: 41, year: 2022},
+  %{age: 35, year: 2022},
+  %{age: 49, year: 2022},
+  %{age: 57, year: 2022},
+  %{age: 38, year: 2022},
+  %{age: 50, year: 2022},
+  %{age: 44, year: 2022},
+  %{age: 62, year: 2022},
+  %{age: 40, year: 2022},
+  %{age: 41, year: 2021},
+  %{age: 42, year: 2022},
+  %{age: 45, year: 2021},
+  %{age: 46, year: 2022},
+  %{age: 42, year: 2021},
+  %{age: 43, year: 2022},
+  %{age: 39, year: 2021},
+  %{age: 63, year: 2021},
+  %{age: 64, year: 2022},
+  %{age: 47, year: 2021},
+  %{age: 48, year: 2022},
+  %{age: 61, year: 2021},
+  %{age: 62, year: 2022},
+  %{age: 46, year: 2021},
+  %{age: 47, year: 2022},
+  %{age: 51, year: 2021},
+  %{age: 52, year: 2022},
+  %{age: 42, year: 2021},
+  %{age: 43, year: 2022},
+  %{age: 41, year: 2021},
+  %{age: 36, year: 2021},
+  %{age: 37, year: 2022},
+  %{age: 39, year: 2021},
+  %{age: 54, year: 2021},
+  %{age: 55, ...},
   %{...},
   ...
 ]
